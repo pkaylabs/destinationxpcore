@@ -52,4 +52,4 @@ class OTP(models.Model):
         return (self.created_at + timedelta(minutes=30)) < timezone.now()
 
     def __str__(self):
-        return self.phone + ' - ' + self.otp
+        return self.email + ' - ' + self.otp
