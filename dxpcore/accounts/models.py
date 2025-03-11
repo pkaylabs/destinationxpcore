@@ -10,6 +10,8 @@ from datetime import timedelta, timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
+from dxpcore.utils.services import send_mail
+
 from .manager import AccountManager
 
 
@@ -26,6 +28,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+
+    created_from_app = models.BooleanField(default=False)
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
 
@@ -50,6 +54,11 @@ class OTP(models.Model):
     def is_expired(self) -> bool:
         '''Returns True if the OTP is expired'''
         return (self.created_at + timedelta(minutes=30)) < timezone.now()
+    
+    def send_otp_to_user(self) -> None:
+        '''Send the OTP to the user'''
+        msg = f'Welcome to the Destination Experience App.\nYour OTP is {self.otp}\n\nRegards,\nDXP Team'
+        send_mail([self.email], 'OTP', msg)
 
     def __str__(self):
         return self.email + ' - ' + self.otp
