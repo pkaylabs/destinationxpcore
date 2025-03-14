@@ -22,7 +22,12 @@ urlpatterns += [
     path('hotels/', views.HotelListAPI.as_view(), name='hotels'),
 ]
 
-# political site
+# political sites
 urlpatterns += [
     path('political/', views.PoliticalListAPI.as_view(), name='political'),
+]
+
+# tourist sites
+urlpatterns += [
+    path('tourists/', views.TouristSiteListAPI.as_view(), name='tourists'),
 ]
