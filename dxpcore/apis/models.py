@@ -43,7 +43,7 @@ class Political(models.Model):
     phone = models.CharField(max_length=12)
     email = models.EmailField(max_length=50)
     landmark = models.CharField(max_length=255)
-    custodian = models.URLField(max_length=200)
+    custodian = models.CharField(max_length=200)
     category = models.CharField(max_length=50, choices=categories)
     description = models.TextField()
     image = models.ImageField(upload_to='political/', null=True, blank=True)

@@ -21,3 +21,8 @@ urlpatterns += [
 urlpatterns += [
     path('hotels/', views.HotelListAPI.as_view(), name='hotels'),
 ]
+
+# political site
+urlpatterns += [
+    path('political/', views.PoliticalListAPI.as_view(), name='political'),
+]
