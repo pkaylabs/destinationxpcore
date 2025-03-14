@@ -75,7 +75,7 @@ class TouristSite(models.Model):
     image = models.ImageField(upload_to='tourism/', null=True, blank=True)
     second_image = models.ImageField(upload_to='tourism/', null=True, blank=True)
     third_image = models.ImageField(upload_to='tourism/', null=True, blank=True)
-    category = models.CharField(max_length=50)
+    category = models.CharField(max_length=50, choices=categories)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
