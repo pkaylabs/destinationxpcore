@@ -19,5 +19,5 @@ urlpatterns += [
 
 # hotels
 urlpatterns += [
-    # path('hotels/', views.HotelListAPI.as_view(), name='hotels'),
+    path('hotels/', views.HotelListAPI.as_view(), name='hotels'),
 ]
