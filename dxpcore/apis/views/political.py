@@ -11,13 +11,13 @@ class PoliticalListAPI(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        '''Get all political'''
+        '''Get all political. Everyone can view the political'''
         political = Political.objects.all().order_by('-created_at', 'name')
         serializer = PoliticalSerializer(political, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        '''Create a new Political'''
+        '''Create a new Political. Only staff can create a site'''
         user = request.user
         if not user.is_staff:
             return Response({'message': 'You are not authorized to create a political site'}, status=status.HTTP_401_UNAUTHORIZED)

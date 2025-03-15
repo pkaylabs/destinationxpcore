@@ -11,13 +11,13 @@ class HotelListAPI(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        '''Get all hotels'''
+        '''Get all hotels. Everyone can view the hotels'''
         hotels = Hotel.objects.all().order_by('-created_at', 'name')
         serializer = HotelSerializer(hotels, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        '''Create a new hotel'''
+        '''Create a new hotel. Only staff can create a hotel'''
         user = request.user
         if not user.is_staff:
             return Response({'message': 'You are not authorized to create a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
