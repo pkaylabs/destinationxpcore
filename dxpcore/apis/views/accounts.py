@@ -103,12 +103,12 @@ class UserProfileAPIView(APIView):
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-        '''Get user profile'''
+        '''Get user profile for the logged in user'''
         user = request.user
         return Response(self.serializer_class(user).data)
     
     def put(self, request, *args, **kwargs):
-        '''Update user profile'''
+        '''Update user profile for the logged in user'''
         user = request.user
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
