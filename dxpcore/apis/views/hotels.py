@@ -34,3 +34,15 @@ class HotelListAPI(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        '''Delete a hotel. Only staff can delete a hotel'''
+        user = request.user
+        if not user.is_staff:
+            return Response({'message': 'You are not authorized to delete a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
+        hotel_id = request.data.get('id')
+        hotel = Hotel.objects.filter(id=hotel_id).first()
+        if hotel:
+            hotel.delete()
+            return Response({'message': 'Hotel deleted successfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Hotel not found'}, status=status.HTTP_404_NOT_FOUND)
