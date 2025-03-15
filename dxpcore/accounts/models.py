@@ -7,6 +7,7 @@ and their otp information.
 '''
 
 from datetime import timedelta, timezone
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 

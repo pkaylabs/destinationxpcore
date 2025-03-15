@@ -2,7 +2,9 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from accounts.models import User
+
 from .models import Hotel, Political, TouristSite
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

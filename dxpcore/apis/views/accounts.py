@@ -1,12 +1,12 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from knox.models import AuthToken
-from rest_framework import status, permissions
 from django.contrib.auth import login
+from knox.models import AuthToken
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from accounts.models import User, OTP
-from apis.serializers import UserSerializer, LoginSerializer, RegisterUserSerializer
-
+from accounts.models import User
+from apis.serializers import (LoginSerializer, RegisterUserSerializer,
+                              UserSerializer)
 
 
 class LoginAPI(APIView):
@@ -79,6 +79,7 @@ class LogoutAPIView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
+        '''Logout user'''
         request.user.auth_token.delete()
         return Response({
             "status": "success",
@@ -89,19 +90,22 @@ class LogoutAPIView(APIView):
 class UsersListAPIView(APIView):
     '''List all users'''
     permission_classes = (permissions.IsAdminUser,)
+    serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
-        users = User.objects.all()
-        return Response(UserSerializer(users, many=True).data)
+        '''List all users. To be used by admins only'''
+        users = User.objects.filter(deleted=False).order_by('name')
+        return Response(self.serializer_class(users, many=True).data)
     
 class UserProfileAPIView(APIView):
     '''Get user profile'''
     permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
         '''Get user profile'''
         user = request.user
-        return Response(UserSerializer(user).data)
+        return Response(self.serializer_class(user).data)
     
     def put(self, request, *args, **kwargs):
         '''Update user profile'''
@@ -126,11 +130,28 @@ class UserProfileAPIView(APIView):
                 print(f"Account status: {account_status}")
                 return Response({'message': 'Account status is required'}, status=status.HTTP_400_BAD_REQUEST)
             
-            culprit = User.objects.filter(id=culprit_id).first()
+            culprit = User.objects.filter(id=culprit_id, deleted=False).first()
             if not culprit:
                 return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             culprit.is_active = account_status == True
             culprit.save()
             return Response(UserSerializer(culprit).data)
         return Response({'message': 'You are not authorized to disable this account'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    def delete(self, request, *args, **kwargs):
+        '''Delete user account. To be used by admins only'''
+        user = request.user
+        if user.is_superuser:
+            culprit_id = request.data.get('id')
+            if user.id == culprit_id:
+                return Response({'message': 'You cannot delete your own account'}, status=status.HTTP_400_BAD_REQUEST)
+            if not culprit_id:
+                return Response({'message': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            culprit = User.objects.filter(id=culprit_id, deleted=False).first()
+            if not culprit:
+                return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            culprit.deleted = True
+            culprit.save()
+            return Response({'message': 'User account deleted successfully'})
+        return Response({'message': 'You are not authorized to delete this account'}, status=status.HTTP_401_UNAUTHORIZED)
     

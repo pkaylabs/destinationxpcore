@@ -1,8 +1,7 @@
 from django.db import models
 
-from dxpcore.utils.constants import HotelCategory
-from dxpcore.utils.constants import PoliticalCategory
-from dxpcore.utils.constants import TourismCategory
+from dxpcore.utils.constants import (HotelCategory, PoliticalCategory,
+                                     TourismCategory)
 
 
 class Hotel(models.Model):

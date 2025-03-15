@@ -7,6 +7,6 @@ admin.site.site_header = 'DESTINATION XP Portal'
 # user
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id' ,'name', 'email', 'phone', 'is_active', 'is_staff', 'is_superuser')
+    list_display = ('id' ,'name', 'email', 'phone', 'is_active', 'is_staff', 'is_superuser', 'deleted')
     search_fields = ('name', 'email', 'phone',)
 

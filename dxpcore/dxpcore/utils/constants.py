@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class HotelCategory(Enum):
     '''App category enumeration for Hotels.'''
     STANDARD = 'Standard'

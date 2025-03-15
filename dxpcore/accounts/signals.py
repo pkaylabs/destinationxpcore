@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from .models import OTP, User
 
-from .models import User, OTP
 
 @receiver(post_save, sender=User)
 def create_otp(sender, instance, created, **kwargs):
