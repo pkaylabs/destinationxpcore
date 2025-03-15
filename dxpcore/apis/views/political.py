@@ -34,3 +34,15 @@ class PoliticalListAPI(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        '''Delete a political site. Only staff can delete a site'''
+        user = request.user
+        if not user.is_staff:
+            return Response({'message': 'You are not authorized to delete a political site'}, status=status.HTTP_401_UNAUTHORIZED)
+        site_id = request.data.get('id')
+        site = Political.objects.filter(id=site_id).first()
+        if site:
+            site.delete()
+            return Response({'message': 'Political site deleted successfully'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Political site not found'}, status=status.HTTP_404_NOT_FOUND)
