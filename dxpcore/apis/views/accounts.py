@@ -93,3 +93,44 @@ class UsersListAPIView(APIView):
     def get(self, request, *args, **kwargs):
         users = User.objects.all()
         return Response(UserSerializer(users, many=True).data)
+    
+class UserProfileAPIView(APIView):
+    '''Get user profile'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        '''Get user profile'''
+        user = request.user
+        return Response(UserSerializer(user).data)
+    
+    def put(self, request, *args, **kwargs):
+        '''Update user profile'''
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def post(self, request, *args, **kwargs):
+        '''Use this to disable/enable a user account. To be used by admins only'''
+        user = request.user
+        if user.is_superuser:
+            culprit_id = request.data.get('id')
+            account_status = request.data.get('is_active')
+            if user.id == culprit_id:
+                return Response({'message': 'You cannot disable your own account'}, status=status.HTTP_400_BAD_REQUEST)
+            if not culprit_id:
+                return Response({'message': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+            if not (account_status == True or account_status == False):
+                print(f"Account status: {account_status}")
+                return Response({'message': 'Account status is required'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            culprit = User.objects.filter(id=culprit_id).first()
+            if not culprit:
+                return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            culprit.is_active = account_status == True
+            culprit.save()
+            return Response(UserSerializer(culprit).data)
+        return Response({'message': 'You are not authorized to disable this account'}, status=status.HTTP_401_UNAUTHORIZED)
+    
