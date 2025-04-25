@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from accounts.models import User
 
-from .models import Hotel, Political, TouristSite
+from .models import Blog, Hotel, Political, TouristSite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,4 +73,11 @@ class TouristSiteSerialiser(serializers.ModelSerializer):
     '''Tourist Attraction Site Serializers'''
     class Meta:
         model = TouristSite
+        exclude = ["created_at", "updated_at"]
+
+class BlogSerializer(serializers.ModelSerializer):
+    '''Blog Serializer'''
+    writer_name = serializers.CharField(source='writer.name', read_only=True)
+    class Meta:
+        model = Blog
         exclude = ["created_at", "updated_at"]
