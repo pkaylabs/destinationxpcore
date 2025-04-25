@@ -25,3 +25,9 @@ class TourismCategory(Enum):
     NATURE = 'Nature'
     ENTERTAINMENT = 'Entertainment'
     OTHERS = 'Others'
+
+class BlogCategory(Enum):
+    '''Type enumeration for Blog model'''
+    TRAVEL = "TRAVEL BLOG"
+    FUNFACT = "FUN FACT"
+    OTHER = "OTHER BLOG"
