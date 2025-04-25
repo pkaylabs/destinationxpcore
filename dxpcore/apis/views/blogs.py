@@ -2,8 +2,8 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apis.models import Blog, Hotel
-from apis.serializers import BlogSerializer, HotelSerializer
+from apis.models import Blog
+from apis.serializers import BlogSerializer
 
 
 class BlogsListAPI(APIView):
