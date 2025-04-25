@@ -32,3 +32,8 @@ urlpatterns += [
 urlpatterns += [
     path('tourists/', views.TouristSiteListAPI.as_view(), name='tourists'),
 ]
+
+# blog posts
+urlpatterns += [
+    path('blogs/', views.BlogsListAPI.as_view(), name='blogs'),
+]
