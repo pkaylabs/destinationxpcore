@@ -14,23 +14,28 @@ class BlogsListAPI(APIView):
         '''Get all/random blogs. Everyone can view the blogs'''
         user = request.user
         if user.is_staff or user.is_superuser:
+            # staff users can view all blogs.
             blogs = Blog.objects.all().order_by('-created_at')
         else:
+            # fetch 20 random blogs for non-staff users.
             _ = Blog.objects.filter(is_published=True).order_by('-created_at')
             blogs = _.filter('?')[20]
         serializer = BlogSerializer(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        '''Create a new blog. Only staff can create a blog'''
+        '''Create a new blog. Only staff users can create a blog'''
         user = request.user
         if not user.is_staff or not user.is_superuser:
             return Response({'message': 'You are not authorized to create a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
+        # injecting the writer id into the request data
+        # so that we can save the blog with the writer id.
         req_data = request.data.copy()
         req_data['writer'] = user.id
         serializer = BlogSerializer(data=req_data)
         blog_id = request.data.get('id')
         blog = None
+        # if blog_id is present, update it. else create a new blog.
         if blog_id:
             blog = Blog.objects.filter(id=blog_id).first()
             if blog:
