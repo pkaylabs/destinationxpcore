@@ -1,6 +1,7 @@
 from django.db import models
 
-from dxpcore.utils.constants import (HotelCategory, PoliticalCategory,
+from accounts.models import User
+from dxpcore.utils.constants import (BlogCategory, HotelCategory, PoliticalCategory,
                                      TourismCategory)
 
 
@@ -81,3 +82,24 @@ class TouristSite(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Blog(models.Model):
+    '''Model to store blogs'''
+
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    category = models.CharField(max_length=20, default=BlogCategory.TRAVEL.value)
+    feature_image = models.ImageField(upload_to='blog/', null=True, blank=True)
+    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blogs', null=True, blank=True)
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def writer_name(self):
+        '''Returns the name of the writer'''
+        return self.writer.name if self.writer else None
+
+    def __str__(self):
+        return self.title
