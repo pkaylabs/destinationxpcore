@@ -23,6 +23,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=500, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    bio = models.TextField(default='Hello, I am using the Destination Experience App.', blank=True, null=True)
 
     deleted = models.BooleanField(default=False)  # Soft delete
     
