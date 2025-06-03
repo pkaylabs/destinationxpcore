@@ -7,7 +7,12 @@ app_name = 'apis'
 # ping api endpoint
 urlpatterns = [
     path('', views.PingAPI.as_view(), name='ping'),
-]   
+]
+
+# dashboard - mobile app
+urlpatterns += [
+    path('dashboard/', views.DashboardDataAPI.as_view(), name='dashboard'),
+]
 
 # accounts
 urlpatterns += [
