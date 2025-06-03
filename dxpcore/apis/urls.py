@@ -21,6 +21,7 @@ urlpatterns += [
     path('register/', views.RegisterUserAPI.as_view(), name='register'),
     path('users/', views.UsersListAPIView.as_view(), name='users'),
     path('userprofile/', views.UserProfileAPIView.as_view(), name='userprofile'),
+    path('changepassword/', views.ChangePasswordAPIView.as_view(), name='changepassword'),
 ]
 
 # hotels
