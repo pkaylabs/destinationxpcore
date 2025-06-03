@@ -18,8 +18,7 @@ class BlogsListAPI(APIView):
             blogs = Blog.objects.all().order_by('-created_at')
         else:
             # fetch 20 random blogs for non-staff users.
-            _ = Blog.objects.filter(is_published=True).order_by('-created_at')
-            blogs = _.filter('?')[20]
+            blogs = Blog.objects.filter(is_published=True).order_by('?')[:20]
         serializer = BlogSerializer(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

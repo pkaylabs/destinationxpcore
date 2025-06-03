@@ -78,6 +78,7 @@ class TouristSiteSerialiser(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     '''Blog Serializer'''
     writer_name = serializers.CharField(source='writer.name', read_only=True)
+    writer_image = serializers.ReadOnlyField()
     class Meta:
         model = Blog
-        exclude = ["created_at", "updated_at"]
+        exclude = ["updated_at"]

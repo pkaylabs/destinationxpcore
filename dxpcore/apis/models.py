@@ -71,6 +71,7 @@ class TouristSite(models.Model):
     phone = models.CharField(max_length=12)
     email = models.EmailField(max_length=50)
     landmark = models.CharField(max_length=255)
+    custodian = models.CharField(max_length=200, default='No Custodian Identified')
     description = models.TextField()
     image = models.ImageField(upload_to='tourism/', null=True, blank=True)
     second_image = models.ImageField(upload_to='tourism/', null=True, blank=True)
@@ -88,6 +89,7 @@ class Blog(models.Model):
     '''Model to store blogs'''
 
     title = models.CharField(max_length=100)
+    subtitle = models.CharField(max_length=250, default='')
     content = models.TextField()
     category = models.CharField(max_length=20, default=BlogCategory.TRAVEL.value)
     feature_image = models.ImageField(upload_to='blog/', null=True, blank=True)
@@ -100,6 +102,11 @@ class Blog(models.Model):
     def writer_name(self):
         '''Returns the name of the writer'''
         return self.writer.name if self.writer else None
+    
+    @property
+    def writer_image(self):
+        '''Returns the image of the writer'''
+        return self.writer.avatar.url if self.writer and self.writer.avatar else ''
 
     def __str__(self):
         return self.title
