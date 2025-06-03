@@ -1,10 +1,11 @@
+import random
 from django.contrib.auth import login
 from knox.models import AuthToken
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import User
+from accounts.models import OTP, User
 from apis.serializers import (ChangePasswordSerializer, LoginSerializer, RegisterUserSerializer,
                               UserSerializer)
 
@@ -173,3 +174,42 @@ class ChangePasswordAPIView(APIView):
             user.save()
             return Response({'status': 'success'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class VerifyOTPAPI(APIView):
+    '''Verify OTP api endpoint'''
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request, *args, **kwargs):
+        '''Use this endpoint to send OTP to the user'''
+        email = request.query_params.get('email')
+        if not email:
+            return Response({'error': 'email number is required'}, status=status.HTTP_400_BAD_REQUEST)
+        code = random.randint(1000, 9999)
+        try:
+            otp = OTP.objects.filter(email=email).first()
+            if otp:
+                otp.delete()
+            otp = OTP.objects.create(email=email, otp=code)
+            otp.send_otp_to_user()
+        except Exception as e:
+            return Response({'error': 'Failed to send OTP'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'message': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+        if not otp:
+            return Response({'error': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+        otp = OTP.objects.filter(email=email, otp=otp).first()
+        if not otp:
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+        if otp.is_expired():
+            return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
+        otp.delete()
+        user = User.objects.filter(email=email).first()
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user.email_verified = True
+        user.phone_verified = True
+        user.save()
+        return Response({'message': 'OTP verified successfully'}, status=status.HTTP_200_OK)

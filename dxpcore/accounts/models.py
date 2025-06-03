@@ -6,7 +6,8 @@ and their otp information.
 
 '''
 
-from datetime import timedelta, timezone
+from datetime import timedelta
+from django.utils import timezone
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
@@ -59,7 +60,7 @@ class OTP(models.Model):
     
     def send_otp_to_user(self) -> None:
         '''Send the OTP to the user'''
-        msg = f'Welcome to the Destination Experience App.\nYour OTP is {self.otp}\n\nRegards,\nDXP Team'
+        msg = f'Welcome to the Destination Experience App.\n\nYour OTP is {self.otp}\n\nRegards,\nDXP Team'
         send_mail([self.email], 'OTP', msg)
 
     def __str__(self):
