@@ -36,6 +36,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
 
+    # preferences
+    preferred_notification_email = models.EmailField(max_length=50, blank=True, null=True)
+    preferred_notification_phone = models.CharField(max_length=12, blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -254,3 +254,23 @@ class ResetPasswordAPIView(APIView):
             return Response({'status': 'success'}, status=status.HTTP_200_OK)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UserPreferenceAPIView(APIView):
+    '''API endpoint to get and update a user's preferences'''
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        '''Get user preferences for the logged in user'''
+        user = request.user
+        return Response(self.serializer_class(user).data)
+
+    def put(self, request, *args, **kwargs):
+        '''Update user preferences for the logged in user'''
+        user = request.user
+        serializer = self.serializer_class(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
