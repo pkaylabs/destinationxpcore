@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import OTP, User
-from apis.serializers import (ChangePasswordSerializer, LoginSerializer, RegisterUserSerializer,
+from apis.serializers import (ChangePasswordSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
                               UserSerializer)
 
 
@@ -189,6 +189,9 @@ class VerifyOTPAPI(APIView):
             otp = OTP.objects.filter(email=email).first()
             if otp:
                 otp.delete()
+            user = User.objects.filter(email=email).first()
+            if not user:
+                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             otp = OTP.objects.create(email=email, otp=code)
             otp.send_otp_to_user()
         except Exception as e:
@@ -213,3 +216,41 @@ class VerifyOTPAPI(APIView):
         user.phone_verified = True
         user.save()
         return Response({'message': 'OTP verified successfully'}, status=status.HTTP_200_OK)
+    
+
+class ResetPasswordAPIView(APIView):
+    '''API endpoint to reset user password'''
+
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        '''Reset user password'''
+        serializer = self.serializer_class(data=request.data)
+        print(f"Request data: {request.data}")
+        # print(f"Serializer data: {serializer.data}")
+        if serializer.is_valid():
+            email = serializer.data.get('email')
+            user = User.objects.filter(email=email).first()
+            print(f"Email: {email}")
+            print(f"User: {user}")
+            if not email:
+                return Response({'email': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+            if not user:
+                return Response({'email': 'User not found.'}, status=status.HTTP_400_BAD_REQUEST)
+            if not user.email_verified:
+                print(f"Email verified: {user.email_verified}")
+                return Response({'email': 'Email not verified.'}, status=status.HTTP_400_BAD_REQUEST)
+            if len(serializer.data.get('new_password')) < 1:
+                print(f"New password: {serializer.data.get('new_password')}")
+                return Response({'new_password': 'Password is too short.'}, status=status.HTTP_400_BAD_REQUEST)
+            if not serializer.data.get('new_password') == serializer.data.get('confirm_password'):
+                print(f"New password: {serializer.data.get('new_password')}")
+                print(f"Confirm password: {serializer.data.get('confirm_password')}")
+                return Response({'new_password': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user.set_password(serializer.data.get('new_password'))
+            user.save()
+            return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

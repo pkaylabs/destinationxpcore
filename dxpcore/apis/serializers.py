@@ -94,3 +94,15 @@ class ChangePasswordSerializer(serializers.Serializer):
         if data.get('new_password') != data.get('confirm_password'):
             raise serializers.ValidationError("Passwords do not match")
         return data
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    '''Serializer for resetting password'''
+    email = serializers.CharField()
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
+
+    def validate(self, data):
+        if not User.objects.filter(email=data.get('email')).exists():
+            raise serializers.ValidationError("Email does not exist")
+        return data
