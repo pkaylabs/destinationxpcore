@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third party apps
+    'channels',
     'corsheaders',
     'rest_framework',
     'knox',
@@ -64,7 +65,22 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dxpcore.wsgi.application'
+# WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
+ASGI_APPLICATION = 'dxpcore.asgi.application'
+
+# channel layer config
+CHANNEL_LAYERS = {
+    'default': {
+        # 'BACKEND': 'channels.layers.InMemoryChannelLayer', # Use in-memory channel layer for development
+        # Use 'channels_redis' for production
+        'BACKEND': 'channels_redis.core.RedisChannelLayer', 
+        'CONFIG': {
+            "hosts" : [('127.0.0.1', 6379)],
+            "capacity": 100,
+            "expiry": 60,
+            }
+    },
+}
 
 
 # Database
