@@ -65,8 +65,8 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
-ASGI_APPLICATION = 'dxpcore.asgi.application'
+WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
+ASGI_APPLICATION = 'dxpcore.asgi.application' # for asgi
 
 # channel layer config
 CHANNEL_LAYERS = {
