@@ -59,7 +59,7 @@ class HotelSerializer(serializers.ModelSerializer):
     '''Hotel Serializer'''
     class Meta:
         model = Hotel
-        exclude = ["created_at", "updated_at"]
+        fields = '__all__'
 
 class NotificationSerializer(serializers.ModelSerializer):
     '''Notification Serializer'''
@@ -72,14 +72,14 @@ class PoliticalSerializer(serializers.ModelSerializer):
     '''Political Serializer'''
     class Meta:
         model = Political
-        exclude = ["created_at", "updated_at"]
+        fields = '__all__'
 
 
 class TouristSiteSerialiser(serializers.ModelSerializer):
     '''Tourist Attraction Site Serializers'''
     class Meta:
         model = TouristSite
-        exclude = ["created_at", "updated_at"]
+        fields = '__all__'
 
 class BlogSerializer(serializers.ModelSerializer):
     '''Blog Serializer'''
@@ -87,7 +87,7 @@ class BlogSerializer(serializers.ModelSerializer):
     writer_image = serializers.ReadOnlyField()
     class Meta:
         model = Blog
-        exclude = ["updated_at"]
+        fields = '__all__'
 
 
 class ChangePasswordSerializer(serializers.Serializer):
