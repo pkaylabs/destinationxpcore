@@ -29,9 +29,9 @@ class BlogsListAPI(APIView):
             return Response({'message': 'You are not authorized to create a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
         # injecting the writer id into the request data
         # so that we can save the blog with the writer id.
-        req_data = request.data.copy()
-        req_data['writer'] = user.id
-        serializer = BlogSerializer(data=req_data)
+        # req_data = request.data.copy()
+        # req_data['writer'] = user.id
+        serializer = BlogSerializer(data=request.data)
         blog_id = request.data.get('id')
         blog = None
         # if blog_id is present, update it. else create a new blog.
@@ -40,7 +40,10 @@ class BlogsListAPI(APIView):
             if blog:
                 serializer = BlogSerializer(blog, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            if not blog:
+                serializer.save(writer=user)
+            else:
+                serializer.save()
             if blog:
                 return Response({"message": "Blog updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
             return Response({"message": "Blog Created Successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
