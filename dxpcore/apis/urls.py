@@ -12,6 +12,7 @@ urlpatterns = [
 # dashboard - mobile app
 urlpatterns += [
     path('dashboard/', views.DashboardDataAPI.as_view(), name='dashboard'),
+    path('webdashboard/', views.WebDashboardDataAPI.as_view(), name='webdashboard'),
 ]
 
 # accounts
@@ -44,4 +45,9 @@ urlpatterns += [
 # blog posts
 urlpatterns += [
     path('blogs/', views.BlogsListAPI.as_view(), name='blogs'),
+]
+
+# notifications
+urlpatterns += [
+    path('notifications/', views.NotificationsListAPI.as_view(), name='notifications'),
 ]

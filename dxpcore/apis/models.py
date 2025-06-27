@@ -109,3 +109,15 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Notification(models.Model):
+    '''Model to store notifications for users'''
+    title = models.CharField(max_length=100)
+    message = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+
+    def __str__(self):
+        return f'Notification: {self.title}'

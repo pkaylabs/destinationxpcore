@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from accounts.models import User
 
-from .models import Blog, Hotel, Political, TouristSite
+from .models import Blog, Hotel, Notification, Political, TouristSite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,12 @@ class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
         exclude = ["created_at", "updated_at"]
+
+class NotificationSerializer(serializers.ModelSerializer):
+    '''Notification Serializer'''
+    class Meta:
+        model = Notification
+        fields = '__all__'
 
 
 class PoliticalSerializer(serializers.ModelSerializer):
