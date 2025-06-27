@@ -41,7 +41,7 @@ class Hotel(models.Model):
     image = models.ImageField(upload_to='hotels/', null=True, blank=True)
     second_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
     third_image = models.ImageField(upload_to='hotels/', null=True, blank=True)
-    category = models.CharField(max_length=50, choices=categories) 
+    category = models.CharField(max_length=50, default=HotelCategory.STANDARD.value) 
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
