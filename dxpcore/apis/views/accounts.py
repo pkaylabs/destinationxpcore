@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import OTP, User
-from apis.serializers import (ChangePasswordSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
+from apis.serializers import (ChangePasswordSerializer, CreateUserSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
                               UserSerializer)
 
 
@@ -97,6 +97,59 @@ class UsersListAPIView(APIView):
         '''List all users. To be used by admins only'''
         users = User.objects.filter(deleted=False).order_by('name')
         return Response(self.serializer_class(users, many=True).data)
+    
+    def post(self, request, *args, **kwargs):
+        '''Create a new user. To be used by admins only'''
+        serializer_class = CreateUserSerializer
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(self.serializer_class(user).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, *args, **kwargs):
+        '''Update a user. To be used by admins only'''
+        user = request.user
+        if not user.is_superuser:
+            return Response({'message': 'You are not authorized to update a user'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        culprit_id = request.data.get('id')
+        if not culprit_id:
+            return Response({'message': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        culprit = User.objects.filter(id=culprit_id, deleted=False).first()
+        if not culprit:
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = UserSerializer(culprit, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, *args, **kwargs):
+        '''Delete a user. To be used by admins only'''
+        user = request.user
+        if not user.is_superuser:
+            return Response({'message': 'You are not authorized to delete a user'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        culprit_id = request.data.get('user')
+        if not culprit_id:
+            return Response({'message': 'User ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        culprit = User.objects.filter(id=culprit_id, deleted=False).first()
+        if not culprit:
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if user.id == culprit.id:
+            return Response({'message': 'You cannot delete your own account'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if culprit.is_superuser:
+            return Response({'message': 'You cannot delete a superuser account'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        culprit.deleted = True
+        culprit.save()
+        return Response({'message': 'User deleted successfully'})
     
 class UserProfileAPIView(APIView):
     '''Get user profile'''
