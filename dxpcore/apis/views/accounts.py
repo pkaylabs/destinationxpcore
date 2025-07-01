@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import OTP, User
+from apis.models import FriendRequest
 from apis.serializers import (ChangePasswordSerializer, CreateUserSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
                               UserSerializer)
 
@@ -327,3 +328,67 @@ class UserPreferenceAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class SendFriendRequestAPIView(APIView):
+    '''API endpoint to send a friend request to another user'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        sender = request.user
+        receiver_id = request.data.get('receiver_id')
+        if not receiver_id:
+            return Response({'error': 'Receiver ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        receiver = User.objects.filter(id=receiver_id, deleted=False).first()
+        if not receiver:
+            return Response({'error': 'Receiver not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if sender.id == receiver.id:
+            return Response({'error': 'You cannot send a friend request to yourself'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if a friend request already exists
+        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver).first()
+        if existing_request:
+            return Response({'message': 'Friend request already sent'}, status=status.HTTP_200_OK)
+        
+        # Create a new friend request
+        FriendRequest.objects.create(sender=sender, receiver=receiver)
+        return Response({'message': 'Friend request sent successfully'}, status=status.HTTP_201_CREATED)
+    
+class AcceptFriendRequestAPIView(APIView):
+    '''API endpoint to accept a friend request'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        request_id = request.data.get('request_id')
+        if not request_id:
+            return Response({'error': 'Request ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user).first()
+        if not friend_request:
+            return Response({'error': 'Friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Accept the friend request
+        friend_request.accepted = True
+        friend_request.save()
+        return Response({'message': 'Friend request accepted successfully'}, status=status.HTTP_200_OK)
+    
+class RejectFriendRequestAPIView(APIView):
+    '''API endpoint to reject a friend request'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        request_id = request.data.get('request_id')
+        if not request_id:
+            return Response({'error': 'Request ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user).first()
+        if not friend_request:
+            return Response({'error': 'Friend request not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Reject the friend request
+        friend_request.delete()
+        return Response({'message': 'Friend request rejected successfully'}, status=status.HTTP_200_OK)

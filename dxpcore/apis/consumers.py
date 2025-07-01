@@ -2,6 +2,7 @@ import json
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
+from .models import ChatRoom
 
 logger = logging.getLogger(__name__)
 
@@ -111,42 +112,30 @@ class NewChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ChatRoomsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # Accept the WebSocket connection
+        self.group_name = 'chatrooms_updates'
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
-        print("WebSocket connection established.")
-        # convert the message to JSON
-        text_data = json.dumps({
-            'message': 'WebSocket connection established.'
-        })
-        # Send a message to the client
-        await self.send(text_data=text_data)
-        
+        await self.send_chatrooms_list()
 
     async def disconnect(self, close_code):
-        # Handle disconnection
-        print("WebSocket connection closed.")
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data):
-        try:
-            # Attempt to parse the incoming message as JSON
-            data = json.loads(text_data)
-            message = data.get('message', '')
-        except json.JSONDecodeError:
-            # If the message is not JSON, treat it as a plain string
-            message = text_data
+        # Optionally handle client messages
+        pass
 
-        if message == 'bye':
-            text_data = json.dumps({
-                'message': 'Server is shutting down.'
-            })
-            await self.send(text_data=text_data)
-            await self.close()
-        else:
-            # Echo the message back to the client
-            text_data = json.dumps({
-                'message': f"Server received: {message}"
-            })
-            await self.send(text_data=text_data)
-        print(f"Received message: {message}")
+    async def chatrooms_update(self, event):
+        await self.send_chatrooms_list()
+
+    @database_sync_to_async
+    def get_chatrooms(self):
+        return list(ChatRoom.objects.values('id', 'name', 'is_group', 'created_at'))
+
+    async def send_chatrooms_list(self):
+        chatrooms = await self.get_chatrooms()
+        await self.send(text_data=json.dumps({
+            'type': 'chatrooms_list',
+            'chatrooms': chatrooms
+        }))

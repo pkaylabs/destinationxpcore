@@ -3,6 +3,10 @@ from django.conf import settings
 from accounts.models import User
 from dxpcore.utils.constants import (BlogCategory, HotelCategory, PoliticalCategory,
                                      TourismCategory)
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 
@@ -23,6 +27,18 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+
+
+class FriendRequest(models.Model):
+    '''Model to store friend requests between users'''
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_requests')
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_requests')
+    created_at = models.DateTimeField(auto_now_add=True)
+    accepted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.sender.name} -> {self.receiver.name}"
+
 
 class Hotel(models.Model):
     '''Model to store information about hotels'''
@@ -121,3 +137,12 @@ class Notification(models.Model):
 
     def __str__(self):
         return f'Notification: {self.title}'
+
+@receiver(post_save, sender=ChatRoom)
+def broadcast_chatroom_update(sender, instance, created, **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'chatrooms_updates',
+            {'type': 'chatrooms_update'}
+        )
