@@ -115,9 +115,29 @@ class NewChatConsumer(AsyncWebsocketConsumer):
 class ChatRoomsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.group_name = 'chatrooms_updates'
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
-        await self.accept()
-        await self.send_chatrooms_list()
+        self.user = await self.get_user_from_token(self.scope['query_string'])
+        if self.user:
+            self.scope['user'] = self.user
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+            await self.send_chatrooms_list()
+        else:
+            await self.close()
+
+    @database_sync_to_async
+    def get_user_from_token(self, query_string):
+        from urllib.parse import parse_qs
+        from knox.auth import TokenAuthentication
+        parsed = parse_qs(query_string.decode())
+        token = parsed.get("token", [None])[0]
+        if not token:
+            return None
+        try:
+            user_auth_tuple = TokenAuthentication().authenticate_credentials(token.encode())
+            return user_auth_tuple[0]  # the user object
+        except Exception as e:
+            logger.warning(f"Token auth failed: {e}")
+            return None
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
@@ -131,11 +151,12 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_chatrooms(self):
-        return list(ChatRoom.objects.values('id', 'name', 'is_group', 'created_at'))
+        # Only return chatrooms where the user is a member
+        return list(ChatRoom.objects.filter(members=self.user).values('id', 'name', 'is_group', 'created_at'))
 
     async def send_chatrooms_list(self):
         chatrooms = await self.get_chatrooms()
         await self.send(text_data=json.dumps({
             'type': 'chatrooms_list',
             'chatrooms': chatrooms
-        }))
+        }, default=str))

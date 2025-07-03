@@ -65,20 +65,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
 ASGI_APPLICATION = 'dxpcore.asgi.application' # for asgi
+WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
 
 # channel layer config
 CHANNEL_LAYERS = {
     'default': {
-        # 'BACKEND': 'channels.layers.InMemoryChannelLayer', # Use in-memory channel layer for development
+        'BACKEND': 'channels.layers.InMemoryChannelLayer', # Use in-memory channel layer for development
         # Use 'channels_redis' for production
-        'BACKEND': 'channels_redis.core.RedisChannelLayer', 
-        'CONFIG': {
-            "hosts" : [('127.0.0.1', 6379)],
-            "capacity": 100,
-            "expiry": 60,
-            }
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer', 
+        # 'CONFIG': {
+        #     "hosts" : [('127.0.0.1', 6379)],
+        #     "capacity": 100,
+        #     "expiry": 60,
+        #     }
     },
 }
 

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import OTP, User
-from apis.models import FriendRequest
+from apis.models import ChatRoom, FriendRequest
 from apis.serializers import (ChangePasswordSerializer, CreateUserSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
                               UserSerializer)
 
@@ -328,6 +328,24 @@ class UserPreferenceAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FriendRequestsAPIView(APIView):    
+    '''API endpoint to get friend requests for the logged in user'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        friend_requests = FriendRequest.objects.filter(receiver=user, accepted=False).order_by('-created_at')
+        return Response({
+            'friend_requests': [{
+                'id': fr.id,
+                'sender_id': fr.sender.id,
+                'sender_name': fr.sender.name,
+                'sender_avatar': fr.sender.avatar.url if fr.sender.avatar else '',
+                'created_at': fr.created_at
+            } for fr in friend_requests]
+        }, status=status.HTTP_200_OK)
     
 
 class SendFriendRequestAPIView(APIView):
@@ -372,6 +390,11 @@ class AcceptFriendRequestAPIView(APIView):
         
         # Accept the friend request
         friend_request.accepted = True
+        ChatRoom.objects.get_or_create(
+            name=f"{friend_request.sender.name} & {friend_request.receiver.name}",
+            is_group=False,
+            members=[friend_request.sender, friend_request.receiver]
+        )
         friend_request.save()
         return Response({'message': 'Friend request accepted successfully'}, status=status.HTTP_200_OK)
     
@@ -392,3 +415,21 @@ class RejectFriendRequestAPIView(APIView):
         # Reject the friend request
         friend_request.delete()
         return Response({'message': 'Friend request rejected successfully'}, status=status.HTTP_200_OK)
+    
+class PeopleListAPIView(APIView):
+    '''API endpoint to get a list of people (users)'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        people = User.objects.filter(deleted=False).exclude(id=user.id).exclude(is_staff=True).order_by('?')[:50]
+        user_requests = FriendRequest.objects.filter(sender=user).values_list('receiver', flat=True)
+        return Response({
+            'people': [{
+                'id': p.id,
+                'name': p.name,
+                'avatar': p.avatar.url if p.avatar else '',
+                'email': p.email,
+                'phone': p.phone
+            } for p in people if p.id not in user_requests],
+        }, status=status.HTTP_200_OK)

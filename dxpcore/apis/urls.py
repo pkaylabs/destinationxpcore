@@ -51,3 +51,12 @@ urlpatterns += [
 urlpatterns += [
     path('notifications/', views.NotificationsListAPI.as_view(), name='notifications'),
 ]
+
+# friend requests
+urlpatterns += [
+    path('people/', views.PeopleListAPIView.as_view(), name='people'),
+    path('friendrequests/', views.FriendRequestsAPIView.as_view(), name='friendrequests'),
+    path('sendfriendrequest/', views.SendFriendRequestAPIView.as_view(), name='sendfriendrequest'),
+    path('acceptfriendrequest/', views.AcceptFriendRequestAPIView.as_view(), name='acceptfriendrequest'),
+    path('rejectfriendrequest/', views.RejectFriendRequestAPIView.as_view(), name='rejectfriendrequest'),
+]
