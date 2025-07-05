@@ -71,6 +71,8 @@ class NewChatConsumer(AsyncWebsocketConsumer):
             )
         elif message:  # Normal chat message
             recipient = data.get('recipient')
+            # Save the message to the database
+            await self.save_message(self.room_name, self.user, message)
             if recipient:
                 # Individual chat
                 recipient_group_name = f'user_{recipient}'
@@ -89,9 +91,18 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'chat_message',
                         'message': message,
-                        'username': self.user.username
+                        'username': self.user.name
                     }
                 )
+
+    @database_sync_to_async
+    def save_message(self, room_name, sender, content):
+        from .models import ChatRoom, Message
+        try:
+            room = ChatRoom.objects.get(name=room_name)
+            Message.objects.create(room=room, sender=sender, content=content)
+        except ChatRoom.DoesNotExist:
+            pass
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
@@ -151,8 +162,80 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_chatrooms(self):
-        # Only return chatrooms where the user is a member
-        return list(ChatRoom.objects.filter(members=self.user).values('id', 'name', 'is_group', 'created_at'))
+        """
+        Return chatrooms where the user is a member,
+        include `other_user` (if private) and the last message.
+        """
+        from .models import Message
+
+        chatrooms = ChatRoom.objects.filter(members=self.user)
+
+        result = []
+        for room in chatrooms:
+            data = {
+                'id': room.id,
+                'name': room.name,
+                'is_group': room.is_group,
+                'created_at': room.created_at.isoformat(),
+            }
+
+            # Add other user for private chats
+            if not room.is_group:
+                other_members = room.members.exclude(id=self.user.id)
+                if other_members.exists():
+                    data['other_user'] = other_members.first().name
+                else:
+                    data['other_user'] = None
+
+            # Fetch last message
+            last_message = (
+                Message.objects.filter(room=room)
+                .order_by('-timestamp')
+                .first()
+            )
+
+            if last_message:
+                data['last_message'] = {
+                    'text': last_message.content,
+                    'created_at': last_message.timestamp.isoformat(),
+                    'sender': last_message.sender.name,
+                }
+            else:
+                data['last_message'] = None
+
+            result.append(data)
+
+        return result
+
+
+    # @database_sync_to_async
+    # def get_chatrooms(self):
+    #     """
+    #     Return a list of chatrooms with `other_user` if private.
+    #     """
+    #     chatrooms = ChatRoom.objects.filter(members=self.user)
+
+    #     result = []
+    #     for room in chatrooms:
+    #         data = {
+    #             'id': room.id,
+    #             'name': room.name,
+    #             'is_group': room.is_group,
+    #             'created_at': room.created_at.isoformat(),  # make it JSON serializable
+    #         }
+
+    #         if not room.is_group:
+    #             # for private chats, find the *other* user
+    #             other_members = room.members.exclude(id=self.user.id)
+    #             if other_members.exists():
+    #                 data['other_user'] = other_members.first().name
+    #             else:
+    #                 data['other_user'] = None
+
+    #         result.append(data)
+
+    #     return result
+
 
     async def send_chatrooms_list(self):
         chatrooms = await self.get_chatrooms()

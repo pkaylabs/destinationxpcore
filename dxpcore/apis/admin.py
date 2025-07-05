@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Blog, ChatRoom, FriendRequest, Hotel, Political, TouristSite
+from .models import Blog, ChatRoom, FriendRequest, Hotel, Political, TouristSite, Message
 
 
 @admin.register(Hotel)
@@ -36,3 +36,10 @@ class FriendRequestAdmin(admin.ModelAdmin):
 class ChatRoomAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'is_group', 'created_at')
     search_fields = ('name',)
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'room', 'sender', 'content', 'timestamp')
+    search_fields = ('room__name', 'sender__name', 'content')
+    list_filter = ('timestamp',)

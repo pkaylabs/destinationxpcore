@@ -32,6 +32,21 @@ class NotificationsListAPI(APIView):
             return Response({"message": "Notification created successfully", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, *args, **kwargs):
+        '''Update a notification. Only staff can update a notification'''
+        user = request.user
+        if not user.is_staff or not user.is_superuser:
+            return Response({'message': 'You are not authorized to update a notification'}, status=status.HTTP_401_UNAUTHORIZED)
+        notification_id = request.data.get('notification')
+        notification = Notification.objects.filter(id=notification_id).first()
+        if not notification:
+            return Response({'message': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = NotificationSerializer(notification, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Notification updated successfully", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, *args, **kwargs):
         '''Delete a notification. Only staff can delete a notification'''
         user = request.user

@@ -18,7 +18,7 @@ class PingAPI(APIView):
 class DashboardDataAPI(APIView):
     '''This view is used to get the dashboard data'''
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         '''

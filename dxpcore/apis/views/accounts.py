@@ -336,7 +336,7 @@ class FriendRequestsAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        friend_requests = FriendRequest.objects.filter(receiver=user, accepted=False).order_by('-created_at')
+        friend_requests = FriendRequest.objects.filter(receiver=user.id, accepted=False).order_by('-created_at')
         return Response({
             'friend_requests': [{
                 'id': fr.id,
@@ -366,7 +366,7 @@ class SendFriendRequestAPIView(APIView):
             return Response({'error': 'You cannot send a friend request to yourself'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Check if a friend request already exists
-        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver).first()
+        existing_request = FriendRequest.objects.filter(sender=sender.id, receiver=receiver.id).first()
         if existing_request:
             return Response({'message': 'Friend request already sent'}, status=status.HTTP_200_OK)
         
@@ -384,7 +384,7 @@ class AcceptFriendRequestAPIView(APIView):
         if not request_id:
             return Response({'error': 'Request ID is required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user).first()
+        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user.id).first()
         if not friend_request:
             return Response({'error': 'Friend request not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -393,7 +393,7 @@ class AcceptFriendRequestAPIView(APIView):
         ChatRoom.objects.get_or_create(
             name=f"{friend_request.sender.name} & {friend_request.receiver.name}",
             is_group=False,
-            members=[friend_request.sender, friend_request.receiver]
+            members=[friend_request.sender.id, friend_request.receiver.id]
         )
         friend_request.save()
         return Response({'message': 'Friend request accepted successfully'}, status=status.HTTP_200_OK)
@@ -408,7 +408,7 @@ class RejectFriendRequestAPIView(APIView):
         if not request_id:
             return Response({'error': 'Request ID is required'}, status=status.HTTP_400_BAD_REQUEST)
         
-        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user).first()
+        friend_request = FriendRequest.objects.filter(id=request_id, receiver=user.id).first()
         if not friend_request:
             return Response({'error': 'Friend request not found'}, status=status.HTTP_404_NOT_FOUND)
         
