@@ -37,7 +37,7 @@ class NotificationsListAPI(APIView):
         user = request.user
         if not user.is_staff or not user.is_superuser:
             return Response({'message': 'You are not authorized to update a notification'}, status=status.HTTP_401_UNAUTHORIZED)
-        notification_id = request.data.get('notification')
+        notification_id = request.data.get('id')
         notification = Notification.objects.filter(id=notification_id).first()
         if not notification:
             return Response({'message': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
