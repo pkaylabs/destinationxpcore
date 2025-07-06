@@ -20,7 +20,7 @@ from .manager import AccountManager
 class User(AbstractBaseUser, PermissionsMixin):
     '''Custom User model for the application'''
     email = models.EmailField(max_length=50, unique=True)
-    phone = models.CharField(max_length=12, unique=True)
+    phone = models.CharField(max_length=15, unique=True)
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=500, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
@@ -38,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     # preferences
     preferred_notification_email = models.EmailField(max_length=50, blank=True, null=True)
-    preferred_notification_phone = models.CharField(max_length=12, blank=True, null=True)
+    preferred_notification_phone = models.CharField(max_length=15, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
