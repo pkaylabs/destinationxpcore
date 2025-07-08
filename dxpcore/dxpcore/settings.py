@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$72@+yg-!cp8(qhi$n53%v_mk0w=7@5&ov#6x)af1p+m-pu2sn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True")
 
 ALLOWED_HOSTS = ["*"]
 
@@ -69,11 +73,18 @@ ASGI_APPLICATION = 'dxpcore.asgi.application' # for asgi
 WSGI_APPLICATION = 'dxpcore.wsgi.application' # for wsgi
 
 # channel layer config
-CHANNEL_LAYERS = {
-    'default': {
-        # 'BACKEND': 'channels.layers.InMemoryChannelLayer', # Use in-memory channel layer for development
-        # Use 'channels_redis' for production
-        'BACKEND': 'channels_redis.core.RedisChannelLayer', 
+if os.getenv('DEPLOYMENT_ENVIRONMENT') == 'development':
+    # Use in-memory channel layer for development
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            # Use 'channels_redis' for production
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts" : [('127.0.0.1', 6379)],
             # "capacity": 100,
