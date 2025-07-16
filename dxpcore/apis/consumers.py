@@ -20,6 +20,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
+            await self.send_chat_history()  # Send chat history on connect
         else:
             await self.close()
 
@@ -122,6 +123,31 @@ class NewChatConsumer(AsyncWebsocketConsumer):
             'username': event['username']
         }))
 
+    @database_sync_to_async
+    def get_chat_history(self):
+        from .models import ChatRoom, Message
+        try:
+            room = ChatRoom.objects.get(name=self.room_name)
+            messages = Message.objects.filter(room=room).order_by('timestamp')
+            return [
+                {
+                    'id': msg.id,
+                    'sender': msg.sender.name,
+                    'content': msg.content,
+                    'timestamp': msg.timestamp.isoformat()
+                }
+                for msg in messages
+            ]
+        except ChatRoom.DoesNotExist:
+            return []
+
+    async def send_chat_history(self):
+        history = await self.get_chat_history()
+        await self.send(text_data=json.dumps({
+            'type': 'chat_history',
+            'messages': history
+        }))
+
 
 class ChatRoomsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -206,35 +232,6 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
             result.append(data)
 
         return result
-
-
-    # @database_sync_to_async
-    # def get_chatrooms(self):
-    #     """
-    #     Return a list of chatrooms with `other_user` if private.
-    #     """
-    #     chatrooms = ChatRoom.objects.filter(members=self.user)
-
-    #     result = []
-    #     for room in chatrooms:
-    #         data = {
-    #             'id': room.id,
-    #             'name': room.name,
-    #             'is_group': room.is_group,
-    #             'created_at': room.created_at.isoformat(),  # make it JSON serializable
-    #         }
-
-    #         if not room.is_group:
-    #             # for private chats, find the *other* user
-    #             other_members = room.members.exclude(id=self.user.id)
-    #             if other_members.exists():
-    #                 data['other_user'] = other_members.first().name
-    #             else:
-    #                 data['other_user'] = None
-
-    #         result.append(data)
-
-    #     return result
 
 
     async def send_chatrooms_list(self):
