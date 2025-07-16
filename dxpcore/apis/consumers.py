@@ -20,7 +20,8 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
-            await self.send_chat_history()  # Send chat history on connect
+            # Send chat history on connect
+            await self.send_chat_history()
         else:
             await self.close()
 
@@ -210,8 +211,11 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
                 other_members = room.members.exclude(id=self.user.id)
                 if other_members.exists():
                     data['other_user'] = other_members.first().name
+                    # avatar
+                    data['other_user_avatar'] = other_members.first().avatar.url if other_members.first().avatar else ''
                 else:
                     data['other_user'] = None
+                    data['other_user_avatar'] = ''
 
             # Fetch last message
             last_message = (

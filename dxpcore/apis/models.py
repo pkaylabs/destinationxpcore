@@ -18,6 +18,9 @@ class ChatRoom(models.Model):
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='chatrooms')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 class Message(models.Model):
     '''Messsage model for storing user messages'''
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
@@ -27,6 +30,9 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['timestamp']
+
+    def __str__(self):
+        return f"{self.sender.name}: {self.content[:20]}"
 
 
 class FriendRequest(models.Model):
