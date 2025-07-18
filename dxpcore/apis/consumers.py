@@ -60,7 +60,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'typing_notification',
-                    'username': self.user.username,
+                    'username': self.user.email,
                 }
             )
         elif message_type == 'stop_typing':
@@ -68,13 +68,15 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'stop_typing_notification',
-                    'username': self.user.username,
+                    'username': self.user.email,
                 }
             )
         elif message:  # Normal chat message
             recipient = data.get('recipient')
             # Save the message to the database
             await self.save_message(self.room_name, self.user, message)
+            from datetime import datetime
+            timestamp = datetime.utcnow().isoformat()
             if recipient:
                 # Individual chat
                 recipient_group_name = f'user_{recipient}'
@@ -83,7 +85,9 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'chat_message',
                         'message': message,
-                        'username': self.user.username
+                        'username': self.user.email,
+                        'email': self.user.email,
+                        'timestamp': timestamp
                     }
                 )
             else:
@@ -93,7 +97,9 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'chat_message',
                         'message': message,
-                        'username': self.user.name
+                        'username': self.user.name,
+                        'email': self.user.email,
+                        'timestamp': timestamp
                     }
                 )
 
@@ -109,7 +115,9 @@ class NewChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
             'username': event['username'],
-            'message': event['message']
+            'email': event.get('email', None),
+            'message': event['message'],
+            'timestamp': event.get('timestamp', None)
         }))
 
     async def typing_notification(self, event):
@@ -130,10 +138,13 @@ class NewChatConsumer(AsyncWebsocketConsumer):
         try:
             room = ChatRoom.objects.get(name=self.room_name)
             messages = Message.objects.filter(room=room).order_by('timestamp')
+            print(f"Retrieved {messages.count()} messages for room {self.room_name}")
+            print(f"Messages: {[msg.content for msg in messages]}")
             return [
                 {
                     'id': msg.id,
                     'sender': msg.sender.name,
+                    'email': msg.sender.email,
                     'content': msg.content,
                     'timestamp': msg.timestamp.isoformat()
                 }

@@ -1,3 +1,4 @@
+from uuid import uuid4
 from django.db import models
 from django.conf import settings
 from accounts.models import User
@@ -13,9 +14,11 @@ from channels.layers import get_channel_layer
 
 class ChatRoom(models.Model):
     '''The chatroom model for storing different chatrooms'''
+    # user uuid for the room_id
+    room_id = models.CharField(max_length=200, default=uuid4)
     name = models.CharField(max_length=100, unique=True)
     is_group = models.BooleanField(default=False)
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='chatrooms')
+    members = models.ManyToManyField(User, related_name='chatrooms')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -24,7 +27,7 @@ class ChatRoom(models.Model):
 class Message(models.Model):
     '''Messsage model for storing user messages'''
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -37,8 +40,8 @@ class Message(models.Model):
 
 class FriendRequest(models.Model):
     '''Model to store friend requests between users'''
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_requests')
-    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_requests')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_requests')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_requests')
     created_at = models.DateTimeField(auto_now_add=True)
     accepted = models.BooleanField(default=False)
 

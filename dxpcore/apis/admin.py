@@ -34,8 +34,8 @@ class FriendRequestAdmin(admin.ModelAdmin):
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'is_group', 'created_at')
-    search_fields = ('name',)
+    list_display = ('id', 'room_id', 'name', 'is_group', 'created_at')
+    search_fields = ('room_id', 'name',)
 
 
 @admin.register(Message)

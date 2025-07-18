@@ -1,4 +1,5 @@
 import random
+from uuid import uuid4
 from django.contrib.auth import login
 from knox.models import AuthToken
 from rest_framework import permissions, status
@@ -391,7 +392,8 @@ class AcceptFriendRequestAPIView(APIView):
         # Accept the friend request
         friend_request.accepted = True
         ChatRoom.objects.get_or_create(
-            name=f"{friend_request.sender.name} & {friend_request.receiver.name}",
+            room_id = uuid4(),
+            name=uuid4(),
             is_group=False,
             members=[friend_request.sender.id, friend_request.receiver.id]
         )
