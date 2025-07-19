@@ -391,12 +391,14 @@ class AcceptFriendRequestAPIView(APIView):
         
         # Accept the friend request
         friend_request.accepted = True
-        ChatRoom.objects.get_or_create(
-            room_id = uuid4(),
-            name=uuid4(),
+        room = ChatRoom.objects.get_or_create(
+            room_id = str(uuid4()).replace('-', ''),
+            name=str(uuid4()).replace('-', ''),
             is_group=False,
-            members=[friend_request.sender.id, friend_request.receiver.id]
+            # members=[friend_request.sender.id, friend_request.receiver.id]
         )
+        room[0].members.add(friend_request.sender, user)
+        room[0].save()
         friend_request.save()
         return Response({'message': 'Friend request accepted successfully'}, status=status.HTTP_200_OK)
     

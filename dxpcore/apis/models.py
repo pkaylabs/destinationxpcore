@@ -15,7 +15,7 @@ from channels.layers import get_channel_layer
 class ChatRoom(models.Model):
     '''The chatroom model for storing different chatrooms'''
     # user uuid for the room_id
-    room_id = models.CharField(max_length=200, default=uuid4)
+    room_id = models.CharField(max_length=200, unique=True)
     name = models.CharField(max_length=100, unique=True)
     is_group = models.BooleanField(default=False)
     members = models.ManyToManyField(User, related_name='chatrooms')
