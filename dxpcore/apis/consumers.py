@@ -62,6 +62,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'typing_notification',
+                    'is_typing': True,
                     'username': self.user.email,
                 }
             )
@@ -70,6 +71,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'stop_typing_notification',
+                    'is_typing': False,
                     'username': self.user.email,
                 }
             )
