@@ -214,6 +214,7 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
                 'id': room.id,
                 'name': room.name,
                 'is_group': room.is_group,
+                'unread': room.get_total_unread_messages(self.user),
                 'created_at': room.created_at.isoformat(),
             }
 
