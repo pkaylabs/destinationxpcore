@@ -104,6 +104,13 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
+            # Notify chatrooms_updates group to refresh chatrooms list
+            await self.channel_layer.group_send(
+                'chatrooms_updates',
+                {
+                    'type': 'chatrooms_update'
+                }
+            )
 
     @database_sync_to_async
     def save_message(self, room_name, sender, content):
