@@ -20,6 +20,8 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
+            # Mark all messages as read for the user
+            await self.mark_all_messages_as_read()
             # Send chat history on connect
             await self.send_chat_history()
         else:
@@ -159,6 +161,15 @@ class NewChatConsumer(AsyncWebsocketConsumer):
             'type': 'chat_history',
             'messages': history
         }))
+
+    @database_sync_to_async
+    def mark_all_messages_as_read(self):
+        from .models import ChatRoom
+        try:
+            room = ChatRoom.objects.get(name=self.room_name)
+            room.read_all_messages(self.user)
+        except ChatRoom.DoesNotExist:
+            pass
 
 
 class ChatRoomsConsumer(AsyncWebsocketConsumer):
