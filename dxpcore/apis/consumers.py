@@ -133,19 +133,23 @@ class NewChatConsumer(AsyncWebsocketConsumer):
             # Notify all members' unread count groups
             await self.notify_unread_count_groups()
 
-    async def notify_unread_count_groups(self):
+    @database_sync_to_async
+    def get_member_ids(self):
         from .models import ChatRoom
         try:
             room = ChatRoom.objects.get(name=self.room_name)
-            member_ids = list(room.members.values_list('id', flat=True))
-            for user_id in member_ids:
-                group_name = f'unread_count_{user_id}'
-                await self.channel_layer.group_send(
-                    group_name,
-                    {'type': 'unread_count_update'}
-                )
+            return list(room.members.values_list('id', flat=True))
         except ChatRoom.DoesNotExist:
-            pass
+            return []
+
+    async def notify_unread_count_groups(self):
+        member_ids = await self.get_member_ids()
+        for user_id in member_ids:
+            group_name = f'unread_count_{user_id}'
+            await self.channel_layer.group_send(
+                group_name,
+                {'type': 'unread_count_update'}
+            )
 
     @database_sync_to_async
     def save_message(self, room_name, sender, content):
