@@ -110,13 +110,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
-                # # Also send the message directly to the sender's socket for instant UI update
-                # await self.send(text_data=json.dumps({
-                #     'username': self.user.name,
-                #     'email': self.user.email,
-                #     'message': message,
-                #     'timestamp': timestamp
-                # }))
+               
             # Notify chatrooms_updates group to refresh chatrooms list
             await self.channel_layer.group_send(
                 'chatrooms_updates',
@@ -180,8 +174,6 @@ class NewChatConsumer(AsyncWebsocketConsumer):
         try:
             room = ChatRoom.objects.get(name=self.room_name)
             messages = Message.objects.filter(room=room).order_by('timestamp')
-            # print(f"Retrieved {messages.count()} messages for room {self.room_name}")
-            # print(f"Messages: {[msg.content for msg in messages]}")
             return [
                 {
                     'id': msg.id,
