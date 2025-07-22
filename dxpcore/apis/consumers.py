@@ -97,6 +97,13 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
+                # Also send the message directly to the sender's socket for instant UI update
+                await self.send(text_data=json.dumps({
+                    'username': self.user.email,
+                    'email': self.user.email,
+                    'message': message,
+                    'timestamp': timestamp
+                }))
             else:
                 # Group chat
                 await self.channel_layer.group_send(
@@ -109,13 +116,13 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
-            # Also send the message directly to the sender's socket for instant UI update
-            await self.send(text_data=json.dumps({
-                'username': self.user.name,
-                'email': self.user.email,
-                'message': message,
-                'timestamp': timestamp
-            }))
+                # Also send the message directly to the sender's socket for instant UI update
+                await self.send(text_data=json.dumps({
+                    'username': self.user.name,
+                    'email': self.user.email,
+                    'message': message,
+                    'timestamp': timestamp
+                }))
             # Notify chatrooms_updates group to refresh chatrooms list
             await self.channel_layer.group_send(
                 'chatrooms_updates',
