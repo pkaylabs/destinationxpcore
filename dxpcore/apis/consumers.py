@@ -97,13 +97,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
-                # Also send the message directly to the sender's socket for instant UI update
-                await self.send(text_data=json.dumps({
-                    'username': self.user.email,
-                    'email': self.user.email,
-                    'message': message,
-                    'timestamp': timestamp
-                }))
+                # Do NOT send directly to sender's socket for individual chat (recipient_group_name is not sender)
             else:
                 # Group chat
                 await self.channel_layer.group_send(
