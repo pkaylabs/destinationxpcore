@@ -113,6 +113,22 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                     'type': 'chatrooms_update'
                 }
             )
+            # Notify all members' unread count groups
+            await self.notify_unread_count_groups()
+
+    async def notify_unread_count_groups(self):
+        from .models import ChatRoom
+        try:
+            room = ChatRoom.objects.get(name=self.room_name)
+            member_ids = list(room.members.values_list('id', flat=True))
+            for user_id in member_ids:
+                group_name = f'unread_count_{user_id}'
+                await self.channel_layer.group_send(
+                    group_name,
+                    {'type': 'unread_count_update'}
+                )
+        except ChatRoom.DoesNotExist:
+            pass
 
     @database_sync_to_async
     def save_message(self, room_name, sender, content):
@@ -276,3 +292,57 @@ class ChatRoomsConsumer(AsyncWebsocketConsumer):
             'type': 'chatrooms_list',
             'chatrooms': chatrooms
         }, default=str))
+
+
+class UnreadCountConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = await self.get_user_from_token(self.scope['query_string'])
+        if self.user:
+            self.group_name = f'unread_count_{self.user.id}'
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+            await self.send_unread_count()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    @database_sync_to_async
+    def get_user_from_token(self, query_string):
+        from urllib.parse import parse_qs
+        from knox.auth import TokenAuthentication
+        parsed = parse_qs(query_string.decode())
+        token = parsed.get("token", [None])[0]
+        if not token:
+            return None
+        try:
+            user_auth_tuple = TokenAuthentication().authenticate_credentials(token.encode())
+            return user_auth_tuple[0]  # the user object
+        except Exception as e:
+            logger.warning(f"Token auth failed: {e}")
+            return None
+
+    @database_sync_to_async
+    def get_total_unread_count(self):
+        from .models import ChatRoom
+        chatrooms = ChatRoom.objects.filter(members=self.user)
+        total = 0
+        for room in chatrooms:
+            total += room.get_total_unread_messages(self.user)
+        return total
+
+    async def send_unread_count(self):
+        count = await self.get_total_unread_count()
+        await self.send(text_data=json.dumps({
+            'type': 'unread_count',
+            'count': count
+        }))
+
+    async def receive(self, text_data):
+        # Optionally allow client to request refresh
+        await self.send_unread_count()
+
+    async def unread_count_update(self, event):
+        await self.send_unread_count()
