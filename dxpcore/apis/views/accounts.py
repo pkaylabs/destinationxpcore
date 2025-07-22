@@ -10,6 +10,7 @@ from accounts.models import OTP, User
 from apis.models import ChatRoom, FriendRequest
 from apis.serializers import (ChangePasswordSerializer, CreateUserSerializer, LoginSerializer, RegisterUserSerializer, ResetPasswordSerializer,
                               UserSerializer)
+from notifications.utils import send_push_notification
 
 
 class LoginAPI(APIView):
@@ -373,6 +374,8 @@ class SendFriendRequestAPIView(APIView):
         
         # Create a new friend request
         FriendRequest.objects.create(sender=sender, receiver=receiver)
+        # send push notification to the receiver
+        send_push_notification(receiver, "New Friend Request", f"You have received a friend request from {sender.name}")
         return Response({'message': 'Friend request sent successfully'}, status=status.HTTP_201_CREATED)
     
 class AcceptFriendRequestAPIView(APIView):
@@ -400,6 +403,8 @@ class AcceptFriendRequestAPIView(APIView):
         room[0].members.add(friend_request.sender, user)
         room[0].save()
         friend_request.save()
+        # send push notification to the sender
+        send_push_notification(friend_request.sender, "Friend Request Accepted", f"{user.name} has accepted your friend request")
         return Response({'message': 'Friend request accepted successfully'}, status=status.HTTP_200_OK)
     
 class RejectFriendRequestAPIView(APIView):

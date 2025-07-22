@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Local apps
     'accounts.apps.AccountsConfig',
     'apis.apps.ApisConfig',
+    'notifications.apps.NotificationsConfig',
 
 ]
 
