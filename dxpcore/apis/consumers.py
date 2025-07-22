@@ -20,10 +20,12 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                 self.channel_name
             )
             await self.accept()
-            # Mark all messages as read for the user
-            await self.mark_all_messages_as_read()
             # Send chat history on connect
             await self.send_chat_history()
+            # Mark all messages as read for the user
+            await self.mark_all_messages_as_read()
+            # Notify all members' unread count groups (including self) after marking as read
+            await self.notify_unread_count_groups()
         else:
             await self.close()
 
@@ -83,6 +85,7 @@ class NewChatConsumer(AsyncWebsocketConsumer):
             timestamp = datetime.utcnow().isoformat()
             if recipient:
                 # Individual chat
+                # send to the recipient's group
                 recipient_group_name = f'user_{recipient}'
                 await self.channel_layer.group_send(
                     recipient_group_name,
@@ -106,6 +109,13 @@ class NewChatConsumer(AsyncWebsocketConsumer):
                         'timestamp': timestamp
                     }
                 )
+            # Also send the message directly to the sender's socket for instant UI update
+            await self.send(text_data=json.dumps({
+                'username': self.user.name,
+                'email': self.user.email,
+                'message': message,
+                'timestamp': timestamp
+            }))
             # Notify chatrooms_updates group to refresh chatrooms list
             await self.channel_layer.group_send(
                 'chatrooms_updates',
