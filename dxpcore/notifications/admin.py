@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import FCMDevice
+
+
+@admin.register(FCMDevice)
+class FCMDeviceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user__name', 'token', 'created_at')
+    search_fields = ('user__name', 'token')
