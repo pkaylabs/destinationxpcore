@@ -12,6 +12,7 @@ def send_push_notification(user, title, message):
     registration_ids = [device.token for device in devices]
 
     if not registration_ids:
+        print("No devices found for user.")
         return "No devices"
 
     result = push_service.notify_multiple_devices(
@@ -19,5 +20,7 @@ def send_push_notification(user, title, message):
         message_title=title,
         message_body=message,
     )
+
+    print(f"Push notification sent to {len(registration_ids)} devices: {result}")
 
     return result
