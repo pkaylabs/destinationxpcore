@@ -9,4 +9,4 @@ class FCMDevice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.token[:10]}"
+        return f"{self.user.name} - {self.token[:10]}"
