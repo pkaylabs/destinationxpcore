@@ -14,11 +14,17 @@ def send_push_notification(user, title, message):
     if not registration_ids:
         print("No devices found for user.")
         return "No devices"
-
-    result = push_service.notify_multiple_devices(
-        registration_ids=registration_ids,
-        message_title=title,
-        message_body=message,
+    
+    params_list = [
+        {
+            "fcm_token": token,
+            "notification_title": title,
+            "notification_body": message,
+        }
+        for token in registration_ids
+    ]
+    result = push_service.async_notify_multiple_devices(
+        params_list=params_list,
     )
 
     print(f"Push notification sent to {len(registration_ids)} devices: {result}")
