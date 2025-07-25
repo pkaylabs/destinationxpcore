@@ -88,7 +88,7 @@ class WebDashboardDataAPI(APIView):
                     'views': BlogView.objects.filter(created_at__week_day=i).count()
                 }
                 for i in range(1, 8)
-            ],
+            ]
         
         min_max_views = {
             'min_views': min([dict(view).get('views', 0) for view in views_by_day]),
