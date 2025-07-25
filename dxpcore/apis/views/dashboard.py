@@ -96,8 +96,16 @@ class WebDashboardDataAPI(APIView):
             'max_views': max([dict(view).get('views', 0) for view in views_by_day])
         }
 
-        # yaxis labels for the bar chart [0, 20, 40, 60, 80, 100] (scaled to max views)
-        yaxis_labels = [i for i in range(0, min_max_views.get('max_views', 0), min_max_views.get('max_views', 0) // 5 + 1 if min_max_views.get('max_views', 0) > 0 else 1)]
+        # yaxis labels for the bar chart [0, a, b, c, d, max] (scaled to max views)
+        yaxis_labels = []
+        max_views = min_max_views.get('max_views', 0)
+        if max_views > 0:
+            step = max_views // 5 or 1
+            yaxis_labels = [i for i in range(0, max_views, step)]
+            if yaxis_labels[-1] != max_views:
+                yaxis_labels.append(max_views)
+        else:
+            yaxis_labels = [0]
 
         data = {
             # top cards
