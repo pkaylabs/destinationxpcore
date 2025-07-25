@@ -90,10 +90,14 @@ class WebDashboardDataAPI(APIView):
                 for i in range(1, 8)
             ]
         
+        # min and max values for views - Bar Chart
         min_max_views = {
             'min_views': min([dict(view).get('views', 0) for view in views_by_day]),
             'max_views': max([dict(view).get('views', 0) for view in views_by_day])
         }
+
+        # yaxis labels for the bar chart [0, 20, 40, 60, 80, 100] (scaled to max views)
+        yaxis_labels = [i for i in range(0, min_max_views.get('max_views', 0), min_max_views.get('max_views', 0) // 5 + 1 if min_max_views.get('max_views', 0) > 0 else 1)]
 
         data = {
             # top cards
@@ -106,6 +110,7 @@ class WebDashboardDataAPI(APIView):
             'views_by_day': views_by_day,
 
             'min_max_views': min_max_views,
+            'yaxis_labels': yaxis_labels,
             
             # blogs by category
             'blogs_by_category': blogs_by_category_list,
