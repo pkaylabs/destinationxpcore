@@ -26,6 +26,7 @@ urlpatterns += [
     path('changepassword/', views.ChangePasswordAPIView.as_view(), name='changepassword'),
     path('resetpassword/', views.ResetPasswordAPIView.as_view(), name='resetpassword'),
     path('userpreferences/', views.UserPreferenceAPIView.as_view(), name='userpreferences'),
+    path('accountdeletion/', views.AccountDeletionRequestAPIView.as_view(), name='accdel'),
 ]
 
 # hotels

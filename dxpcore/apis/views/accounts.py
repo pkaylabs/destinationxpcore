@@ -1,4 +1,5 @@
 import random
+from time import time
 from uuid import uuid4
 from django.contrib.auth import login
 from knox.models import AuthToken
@@ -442,3 +443,13 @@ class PeopleListAPIView(APIView):
                 'phone': p.phone
             } for p in people if p.id not in user_requests],
         }, status=status.HTTP_200_OK)
+    
+
+class AccountDeletionRequestAPIView(APIView):
+    '''API endpoint to request account deletion'''
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, *args, **kwargs):
+        # simulate account deletion request
+        time.sleep(2)
+        return Response({'message': 'Account deletion request submitted successfully'}, status=status.HTTP_200_OK)
