@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from apis.models import Blog, Hotel, TouristSite
+from apis.models import Blog, Hotel, Political, TouristSite
 from apis.serializers import BlogSerializer, HotelSerializer, TouristSiteSerialiser
 
 
@@ -49,6 +49,15 @@ class WebDashboardDataAPI(APIView):
         for the web dashboard
         '''
 
+        # blogs count
+        blogs_count = Blog.objects.count()
+        # hotels count
+        hotels_count = Hotel.objects.count()
+        # tourist sites count
+        tourist_sites_count = TouristSite.objects.count()
+        # political sites count
+        political_sites_count = Political.objects.count()
+
         # blogs by category
         blogs_by_category = {}
         blogs = Blog.objects.all()
@@ -58,16 +67,21 @@ class WebDashboardDataAPI(APIView):
                 blogs_by_category[category] = []
             blogs_by_category[category].append(blog)
 
+        # roybgiv colors
+        colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3']
+
         data = {
             # top cards
-            'content_upload': random.randint(100, 500),
+            'content_upload': blogs_count + hotels_count + tourist_sites_count + political_sites_count,
             'blog_posts': Blog.objects.count(),
             'views': random.randint(1000, 5000),
             'users': User.objects.count(),
+            
             # blogs by category
             'blogs_by_category': {
                 # counts
-                category: len(blogs) for category, blogs in blogs_by_category.items()
+                category: { 'value': len(blogs), 'color': colors[i % len(colors)] }
+                for i, (category, blogs) in enumerate(blogs_by_category.items())
             },
 
         }
