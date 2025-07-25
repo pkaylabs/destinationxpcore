@@ -91,8 +91,8 @@ class WebDashboardDataAPI(APIView):
             ],
         
         min_max_views = {
-            'min_views': min([view.get('views', 0) for view in views_by_day]),
-            'max_views': max([view.get('views', 0) for view in views_by_day])
+            'min_views': min([dict(view).get('views', 0) for view in views_by_day]),
+            'max_views': max([dict(view).get('views', 0) for view in views_by_day])
         }
 
         data = {
