@@ -69,7 +69,7 @@ class WebDashboardDataAPI(APIView):
 
         # roybgiv colors
         colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3']
-
+        days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
          # Convert to list of objects
         blogs_by_category_list = [
             {
@@ -90,7 +90,9 @@ class WebDashboardDataAPI(APIView):
             # blog views by days [mon, tue, wed, thu, fri, sat, sun]
             'views_by_day': [
                 {
-                    'day': i,
+                    'day': days[i - 1],
+                    'percentage': BlogView.objects.filter(created_at__week_day=i).count() / BlogView.objects.count() * 100 if BlogView.objects.count() > 0 else 0,
+                    'status': 'Has Views' if BlogView.objects.filter(created_at__week_day=i).count() > 0 else 'No Views',
                     'views': BlogView.objects.filter(created_at__week_day=i).count()
                 }
                 for i in range(1, 8)
