@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apis.models import Blog
-from apis.serializers import BlogSerializer
+from apis.serializers import BlogSerializer, BlogViewSerializer
 
 
 class BlogsListAPI(APIView):
@@ -60,3 +60,16 @@ class BlogsListAPI(APIView):
             blog.delete()
             return Response({'message': 'Blog deleted successfully'}, status=status.HTTP_200_OK)
         return Response({'message': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+class ViewBlogAPI(APIView):
+    '''View Blog API endpoint'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        '''View a blog by id. Everyone can view the blogs'''
+        serializer = BlogViewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user, ip_address=request.META.get('REMOTE_ADDR'))
+            return Response({'message': 'Blog viewed successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

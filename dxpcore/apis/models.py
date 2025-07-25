@@ -142,6 +142,16 @@ class Blog(models.Model):
         return self.title
 
 
+class BlogView(models.Model):
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='views')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user or self.ip_address} viewed {self.blog.title} at {self.created_at}"
+
+
 class Notification(models.Model):
     '''Model to store notifications for users'''
     title = models.CharField(max_length=100)

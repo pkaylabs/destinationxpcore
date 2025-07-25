@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from accounts.models import User
 
-from .models import Blog, Hotel, Notification, Political, TouristSite
+from .models import Blog, BlogView, Hotel, Notification, Political, TouristSite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -111,6 +111,13 @@ class BlogSerializer(serializers.ModelSerializer):
     writer_image = serializers.ReadOnlyField()
     class Meta:
         model = Blog
+        fields = '__all__'
+
+
+class BlogViewSerializer(serializers.ModelSerializer):
+    '''Blog View Serializer'''
+    class Meta:
+        model = BlogView
         fields = '__all__'
 
 

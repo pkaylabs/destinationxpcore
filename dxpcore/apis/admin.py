@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Blog, ChatRoom, FriendRequest, Hotel, Political, TouristSite, Message
+from .models import Blog, BlogView, ChatRoom, FriendRequest, Hotel, Political, TouristSite, Message
 
 
 @admin.register(Hotel)
@@ -25,6 +25,10 @@ class BlogAdmin(admin.ModelAdmin):
     search_fields = ('title', 'writer__name')
     list_filter = ('is_published', 'created_at')
 
+@admin.register(BlogView)
+class BlogViewAdmin(admin.ModelAdmin):
+    list_display = ('user', 'blog', 'ip_address', 'created_at')
+    search_fields = ('user__name', 'blog__title', 'ip_address')
 
 @admin.register(FriendRequest)
 class FriendRequestAdmin(admin.ModelAdmin):

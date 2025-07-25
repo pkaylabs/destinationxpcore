@@ -46,6 +46,7 @@ urlpatterns += [
 # blog posts
 urlpatterns += [
     path('blogs/', views.BlogsListAPI.as_view(), name='blogs'),
+    path('readblog/', views.ViewBlogAPI.as_view(), name='readblog'),
 ]
 
 # notifications
