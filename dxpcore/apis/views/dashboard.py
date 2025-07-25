@@ -80,15 +80,7 @@ class WebDashboardDataAPI(APIView):
             for i, (category, blogs) in enumerate(blogs_by_category.items())
         ]
 
-        data = {
-            # top cards
-            'content_upload': blogs_count + hotels_count + tourist_sites_count + political_sites_count,
-            'blog_posts': Blog.objects.count(),
-            'views': BlogView.objects.count(),
-            'users': User.objects.count(),
-
-            # blog views by days [mon, tue, wed, thu, fri, sat, sun]
-            'views_by_day': [
+        views_by_day = [
                 {
                     'day': days[i - 1],
                     'percentage': BlogView.objects.filter(created_at__week_day=i).count() / BlogView.objects.count() * 100 if BlogView.objects.count() > 0 else 0,
@@ -97,6 +89,23 @@ class WebDashboardDataAPI(APIView):
                 }
                 for i in range(1, 8)
             ],
+        
+        min_max_views = {
+            'min_views': min([view['views'] for view in views_by_day if view['views'] > 0]),
+            'max_views': max([view['views'] for view in views_by_day]) if views_by_day else 0
+        }
+
+        data = {
+            # top cards
+            'content_upload': blogs_count + hotels_count + tourist_sites_count + political_sites_count,
+            'blog_posts': Blog.objects.count(),
+            'views': BlogView.objects.count(),
+            'users': User.objects.count(),
+
+            # blog views by days [mon, tue, wed, thu, fri, sat, sun]
+            'views_by_day': views_by_day,
+
+            'min_max_views': min_max_views,
             
             # blogs by category
             'blogs_by_category': blogs_by_category_list,
