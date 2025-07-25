@@ -70,6 +70,16 @@ class WebDashboardDataAPI(APIView):
         # roybgiv colors
         colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3']
 
+         # Convert to list of objects
+        blogs_by_category_list = [
+            {
+                'category': category,
+                'value': len(blogs),
+                'color': colors[i % len(colors)]
+            }
+            for i, (category, blogs) in enumerate(blogs_by_category.items())
+        ]
+
         data = {
             # top cards
             'content_upload': blogs_count + hotels_count + tourist_sites_count + political_sites_count,
@@ -78,11 +88,7 @@ class WebDashboardDataAPI(APIView):
             'users': User.objects.count(),
             
             # blogs by category
-            'blogs_by_category': {
-                # counts
-                category: { 'value': len(blogs), 'color': colors[i % len(colors)] }
-                for i, (category, blogs) in enumerate(blogs_by_category.items())
-            },
+            'blogs_by_category': blogs_by_category_list,
 
         }
         return Response(data, status=status.HTTP_200_OK)
