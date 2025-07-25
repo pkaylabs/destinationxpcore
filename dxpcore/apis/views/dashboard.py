@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
-from apis.models import Blog, Hotel, Political, TouristSite
+from apis.models import Blog, BlogView, Hotel, Political, TouristSite
 from apis.serializers import BlogSerializer, HotelSerializer, TouristSiteSerialiser
 
 
@@ -84,8 +84,17 @@ class WebDashboardDataAPI(APIView):
             # top cards
             'content_upload': blogs_count + hotels_count + tourist_sites_count + political_sites_count,
             'blog_posts': Blog.objects.count(),
-            'views': random.randint(1000, 5000),
+            'views': BlogView.objects.count(),
             'users': User.objects.count(),
+
+            # blog views by days [mon, tue, wed, thu, fri, sat, sun]
+            'views_by_day': [
+                {
+                    'day': i,
+                    'views': BlogView.objects.filter(created_at__week_day=i).count()
+                }
+                for i in range(1, 8)
+            ],
             
             # blogs by category
             'blogs_by_category': blogs_by_category_list,
