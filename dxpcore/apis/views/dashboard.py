@@ -83,9 +83,9 @@ class WebDashboardDataAPI(APIView):
         views_by_day = [
                 {
                     'day': days[i - 1],
-                    'percentage': BlogView.objects.filter(created_at__week_day=i).count() / BlogView.objects.count() * 100 if BlogView.objects.count() > 0 else 0,
-                    'status': 'Has Views' if BlogView.objects.filter(created_at__week_day=i).count() > 0 else 'No Views',
-                    'views': BlogView.objects.filter(created_at__week_day=i).count()
+                    'percentage': BlogView.objects.filter(created_at__week_day=i-1).count() / BlogView.objects.count() * 100 if BlogView.objects.count() > 0 else 0,
+                    'status': 'Has Views' if BlogView.objects.filter(created_at__week_day=i-1).count() > 0 else 'No Views',
+                    'views': BlogView.objects.filter(created_at__week_day=i-1).count()
                 }
                 for i in range(1, 8)
             ]
