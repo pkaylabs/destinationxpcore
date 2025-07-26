@@ -1,5 +1,5 @@
 import random
-from time import time
+import time
 from uuid import uuid4
 from django.contrib.auth import login
 from knox.models import AuthToken
