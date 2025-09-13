@@ -471,7 +471,7 @@ class BlockUserAPIView(APIView):
         # check if user belongs to that chatroom
         if not chatroom_id:
             return Response({'error': 'Chatroom ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-        chatroom = ChatRoom.objects.filter(id=chatroom_id, members=user).first()
+        chatroom = ChatRoom.objects.filter(room_id=chatroom_id, members=user).first()
         if not chatroom:
             return Response({'error': 'Chatroom not found'}, status=status.HTTP_404_NOT_FOUND)
         # for now, blocking a user will just delete the chatroom
