@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>End User License Agreement (EULA)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root {
+  --bg:#ffffff;
+  --fg:#1a1a1a;
+  --muted:#595959;
+  --accent:#2254f5;
+  --border:#e2e6eb;
+  --card:#ffffff;
+  --radius:10px;
+  --heading-font:Arial,Helvetica,sans-serif;
+  --body-font:Arial,Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0f1216;
+    --fg:#f5f7fa;
+    --muted:#9aa4b1;
+    --accent:#4a82ff;
+    --border:#2a3038;
+    --card:#161b22;
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:var(--body-font);
+  background:var(--bg);
+  color:var(--fg);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrapper {
+  max-width:920px;
+  margin:0 auto;
+  padding:40px 22px 80px;
+}
+.logo {
+  display:block;
+  width:178px;
+  height:38px;
+  margin:0 auto 40px;
+  background:center/contain no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNzgiIGhlaWdodD0iMzgiIiB2aWV3Qm94PSIwIDAgMTc4IDM4Ij48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNEMUQxRDEiIGQ9Ik00LjI4MyAyNC4xMDdjLS43MDUgMC0xLjI1OC0uMjU2LTEuNjYtLjc2OGgtLjA4NWMuMDU3LjUwMi4wODYuNzkyLjA4Ni44N3YyLjQzNEguOTg1di04LjY0OGgxLjMzMmwuMjMxLjc3OWguMDc2Yy4zODMtLjU5NC45NS0uODkyIDEuNzAyLS44OTIuNzEgMCAxLjI2NC4yNzQgMS42NjUuODIyLjQwMS41NDguNjAyIDEuMzA5LjYwMiAyLjI4MyAwIC42NC0uMDk0IDEuMTk4LS4yODIgMS42Ny0uMTg4LjQ3My0uNDU2LjgzMy0uODAzIDEuMDgtLjM0Ny4yNDctLjc1Ni4zNy0xLjIyNS4zN3pNMy44IDE5LjE5M2MtLjQwNSAwLS43LjEyNC0uODg2LjM3My0uMTg3LjI0OS0uMjgzLjY2LS4yOSAxLjIzM3YuMTc3YzAgLjY0NS4wOTUgMS4xMDcuMjg3IDEuMzg2LjE5Mi4yOC40OTUuNDE5LjkxLjQxOS43MzQgMCAxLjEwMS0uNjA1IDEuMTAxLTEuODE2IDAtLjU5LS4wOS0xLjAzNC0uMjctMS4zMjktLjE4Mi0uMjk1LS40NjUtLjQ0My0uODUyLS40NDN6Ii8+PC9nPjwvc3ZnPg==");
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.15));
+}
+h1,h2,h3 {
+  font-family:var(--heading-font);
+  font-weight:700;
+  line-height:1.25;
+  margin:2.2em 0 .6em;
+  color:var(--fg);
+  scroll-margin-top:90px;
+}
+h1 { font-size:2.1rem; margin-top:0; }
+h2 { font-size:1.45rem; }
+h3 { font-size:1.15rem; }
+p { margin:.9em 0; font-size:.97rem; }
+.small { font-size:.8rem; color:var(--muted); }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+hr {
+  border:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:50px 0;
+}
+.notice {
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:18px 20px;
+  border-radius:var(--radius);
+  font-size:.9rem;
+  color:var(--muted);
+  margin:25px 0 45px;
+}
+.toc {
+  columns: 2 320px;
+  column-gap:40px;
+  list-style:none;
+  padding:0;
+  margin:10px 0 40px;
+}
+.toc li { break-inside:avoid; margin:4px 0; }
+.tagline { font-size:1rem; color:var(--muted); margin-top:-10px; }
+.section-block {
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:26px 30px 30px;
+  border-radius:var(--radius);
+  margin:28px 0 38px;
+  box-shadow:0 4px 8px -2px rgba(0,0,0,.04);
+}
+.section-block h2:first-child { margin-top:0; }
+ul,ol { padding-left:22px; }
+li { margin:.45em 0; }
+.badge {
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  font-size:.65rem;
+  font-weight:600;
+  letter-spacing:.5px;
+  padding:3px 7px;
+  border-radius:4px;
+  vertical-align:middle;
+  margin-left:6px;
+}
+.muted { color:var(--muted); }
+.footer {
+  margin-top:70px;
+  font-size:.75rem;
+  text-align:center;
+  color:var(--muted);
+}
+code {
+  background:rgba(0,0,0,.06);
+  padding:2px 5px;
+  border-radius:4px;
+  font-size:.85em;
+}
+@media (max-width:720px){
+  .section-block { padding:22px 20px 26px; }
+  h1 { font-size:1.75rem; }
+  h2 { font-size:1.25rem; }
+  .logo { margin-bottom:28px; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<span class="logo" aria-label="Logo"></span>
+
+<header>
+  <h1>END USER LICENSE AGREEMENT</h1>
+  <p class="tagline">Destination Experience App – Last updated September 13, 2025</p>
+  <div class="notice">
+    This End User License Agreement ("Agreement") is between you ("End User") and Emcon Services and governs use of the Destination Experience App. By downloading, installing, or using the app you agree to these terms.
+  </div>
+</header>
+
+<h2>Table of Contents</h2>
+<ol class="toc">
+  <li><a href="#application">1. The Application</a></li>
+  <li><a href="#scope">2. Scope of License</a></li>
+  <li><a href="#requirements">3. Technical Requirements</a></li>
+  <li><a href="#support">4. Maintenance & Support</a></li>
+  <li><a href="#datause">5. Use of Data</a></li>
+  <li><a href="#ugc">6. User-Generated Contributions</a></li>
+  <li><a href="#contribution">7. Contribution License</a></li>
+  <li><a href="#liability">8. Liability</a></li>
+  <li><a href="#warranty">9. Warranty</a></li>
+  <li><a href="#productclaims">10. Product Claims</a></li>
+  <li><a href="#compliance">11. Legal Compliance</a></li>
+  <li><a href="#contact">12. Contact Information</a></li>
+  <li><a href="#termination">13. Termination</a></li>
+  <li><a href="#thirdparty">14. Third‑Party Terms & Beneficiaries</a></li>
+  <li><a href="#ipr">15. Intellectual Property Rights</a></li>
+  <li><a href="#law">16. Applicable Law</a></li>
+  <li><a href="#misc">17. Miscellaneous</a></li>
+</ol>
+
+<div id="application" class="section-block">
+  <h2>1. The Application</h2>
+  <p><strong>Destination Experience App</strong> ("Licensed Application") is software created to explore the beauty and culture of Bayelsa and enable user networking and chat features for iOS and Android devices ("Devices"). It allows users to explore tourist sites and connect.</p>
+  <p>The Licensed Application is not designed for compliance with sector‑specific regulations (HIPAA, FISMA, GLBA, etc.). Do not use it where such compliance is required.</p>
+</div>
+
+<div id="scope" class="section-block">
+  <h2>2. Scope of License</h2>
+  <p>2.1 You are granted a non‑transferable, non‑exclusive, non‑sublicensable license to install and use the Licensed Application on Devices you own or control, subject to platform usage rules (including Family Sharing or enterprise distribution where applicable).</p>
+  <p>2.2 This Agreement governs updates unless a separate license is supplied.</p>
+  <p>2.3 Reverse engineering, decompiling, translating, creating derivative works, or attempting source code extraction is prohibited without prior written consent.</p>
+  <p>2.4 You may create backup copies solely for lawful archival purposes; all IP notices must remain intact.</p>
+  <p>2.5 Violations or attempts may result in prosecution and damages.</p>
+  <p>2.6 Licensor may modify licensing terms at any time.</p>
+  <p>2.7 You must comply with all applicable third‑party terms when using the app.</p>
+</div>
+
+<div id="requirements" class="section-block">
+  <h2>3. Technical Requirements</h2>
+  <p>3.1 Licensor may provide updates for firmware / hardware compatibility but is not obligated to continue support indefinitely.</p>
+  <p>3.2 You are responsible for confirming Device compatibility.</p>
+  <p>3.3 Licensor may change technical specifications at any time.</p>
+</div>
+
+<div id="support" class="section-block">
+  <h2>4. Maintenance and Support</h2>
+  <p>4.1 Licensor alone provides maintenance & support. Contact information appears in the store listing.</p>
+  <p>4.2 Neither Apple nor Google has any obligation to furnish support for the Licensed Application.</p>
+</div>
+
+<div id="datause" class="section-block">
+  <h2>5. Use of Data</h2>
+  <p>Licensor may access app content and personal information per its Privacy Policy: <a href="https://www.termsfeed.com/live/ae58951b-675b-4e38-9486-67ad1515e7ab" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+  <p>Technical data (device, system, usage diagnostics) may be collected to improve services, deliver updates, and enhance performance in a non‑personally identifying format where possible.</p>
+</div>
+
+<div id="ugc" class="section-block">
+  <h2>6. User‑Generated Contributions</h2>
+  <p>The app may allow creation or publication of content ("Contributions") including text, media, or profile materials. Contributions may be visible to others and treated as non‑confidential. You represent and warrant your Contributions:</p>
+  <ul>
+    <li>Do not infringe IP or moral rights.</li>
+    <li>You own or have necessary rights and consents.</li>
+    <li>Include permissions for identifiable persons.</li>
+    <li>Are not false or misleading.</li>
+    <li>Are not unsolicited advertising/spam.</li>
+    <li>Are not obscene, defamatory, harassing, or otherwise unlawful.</li>
+    <li>Do not threaten or incite violence.</li>
+    <li>Do not violate law (including child protection).</li>
+    <li>Do not violate privacy/publicity rights.</li>
+    <li>Contain no hate or discrimination.</li>
+    <li>Comply with this Agreement and all regulations.</li>
+  </ul>
+  <p>Violation may result in suspension or termination.</p>
+</div>
+
+<div id="contribution" class="section-block">
+  <h2>7. Contribution License</h2>
+  <p>By submitting Contributions you grant Licensor a worldwide, perpetual, irrevocable, transferable, royalty‑free license to host, reproduce, adapt, publish, distribute, perform, display, and create derivative works, including sublicensing. You waive moral rights to the extent permitted by law.</p>
+  <p>We may edit, recategorize, moderate, or remove Contributions at our discretion without obligation to monitor.</p>
+</div>
+
+<div id="liability" class="section-block">
+  <h2>8. Liability</h2>
+  <p>Licensor is not responsible for damages arising from breach of obligations described herein. You should maintain backups where possible. Alterations or unauthorized modifications may void access.</p>
+</div>
+
+<div id="warranty" class="section-block">
+  <h2>9. Warranty</h2>
+  <p>9.1 At download the app is warranted free of known malware and functions substantially as described.</p>
+  <p>9.2 No warranty covers improper, unauthorized, or incompatible use beyond Licensor control.</p>
+  <p>9.3 Report defects within ninety (90) days of discovery to the contact email.</p>
+  <p>9.4 Confirmed defects may be remedied or replaced at Licensor’s discretion.</p>
+  <p>9.5 Store operators’ sole obligation is potential purchase price refund; no further warranty duties apply.</p>
+  <p>9.6 For entrepreneurs: statutory limitation may be twelve (12) months unless consumer protection laws mandate otherwise.</p>
+</div>
+
+<div id="productclaims" class="section-block">
+  <h2>10. Product Claims</h2>
+  <p>Emcon Services (not platform operators) is responsible for addressing any product liability, regulatory compliance, consumer protection, privacy, or related claims.</p>
+</div>
+
+<div id="compliance" class="section-block">
+  <h2>11. Legal Compliance</h2>
+  <p>You represent you are not in an embargoed or terrorism‑sanctioned country and are not listed on any restricted party list.</p>
+</div>
+
+<div id="contact" class="section-block">
+  <h2>12. Contact Information</h2>
+  <p><strong>PKay Software Consultancy</strong><br>
+     Mensah Sarbah Main Hall - University Of Ghana<br>
+     Legon, Ghana<br>
+     <a href="mailto:pkaysoftwareconsultancy@gmail.com">pkaysoftwareconsultancy@gmail.com</a>
+  </p>
+</div>
+
+<div id="termination" class="section-block">
+  <h2>13. Termination</h2>
+  <p>This license remains effective until terminated. It terminates automatically without notice if you breach its terms. Upon termination you must cease use and destroy all copies.</p>
+</div>
+
+<div id="thirdparty" class="section-block">
+  <h2>14. Third‑Party Terms & Beneficiary</h2>
+  <p>Licensor will comply with applicable third‑party agreements. Apple and Google (and subsidiaries) are third‑party beneficiaries empowered to enforce this Agreement after your acceptance.</p>
+</div>
+
+<div id="ipr" class="section-block">
+  <h2>15. Intellectual Property Rights</h2>
+  <p>In event of any third‑party IP claim regarding the app or its use, Emcon Services is solely responsible for investigation, defense, settlement, or discharge.</p>
+</div>
+
+<div id="law" class="section-block">
+  <h2>16. Applicable Law</h2>
+  <p>This Agreement is governed by the laws of Nigeria, excluding conflict‑of‑law principles.</p>
+</div>
+
+<div id="misc" class="section-block">
+  <h2>17. Miscellaneous</h2>
+  <p>17.1 If any provision is invalid, remaining provisions remain effective; an enforceable substitute reflecting original intent will apply.</p>
+  <p>17.2 Modifications or collateral agreements require written form. Written form requirement may itself be waived only in writing.</p>
+</div>
+
+<footer class="footer">
+  &copy; <span id="year"></span> Emcon Services. All rights reserved.
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</div>
+</body>
+</html>
