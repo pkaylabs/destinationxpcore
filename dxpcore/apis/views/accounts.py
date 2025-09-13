@@ -40,8 +40,9 @@ class LoginAPI(APIView):
        
         login(request, user)
 
+        # this is commented out to allow multiple device logins
         # Delete existing token
-        AuthToken.objects.filter(user=user).delete()
+        # AuthToken.objects.filter(user=user).delete()
         return Response({
             "user": UserSerializer(user).data,
             "token": AuthToken.objects.create(user)[1],

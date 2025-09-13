@@ -13,7 +13,8 @@ class BlogsListAPI(APIView):
     def get(self, request, *args, **kwargs):
         '''Get all/random blogs. Everyone can view the blogs'''
         user = request.user
-        if user.is_staff or user.is_superuser:
+        # check if user is authenticated and is staff or superuser
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
             # staff users can view all blogs.
             blogs = Blog.objects.all().order_by('-created_at')
         else:
@@ -25,7 +26,7 @@ class BlogsListAPI(APIView):
     def post(self, request, *args, **kwargs):
         '''Create a new blog. Only staff users can create a blog'''
         user = request.user
-        if not user.is_staff or not user.is_superuser:
+        if not user.is_authenticated or not (user.is_staff or user.is_superuser):
             return Response({'message': 'You are not authorized to create a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
         # injecting the writer id into the request data
         # so that we can save the blog with the writer id.
@@ -52,7 +53,7 @@ class BlogsListAPI(APIView):
     def delete(self, request, *args, **kwargs):
         '''Delete a blog. Only staff can delete a blog'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to delete a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
         blog_id = request.data.get('blog')
         blog = Blog.objects.filter(id=blog_id).first()
@@ -70,6 +71,9 @@ class ViewBlogAPI(APIView):
         '''View a blog by id. Everyone can view the blogs'''
         serializer = BlogViewSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user, ip_address=request.META.get('REMOTE_ADDR'))
+            if request.user.is_authenticated:
+                serializer.save(user=request.user, ip_address=request.META.get('REMOTE_ADDR'))
+            else:
+                serializer.save(ip_address=request.META.get('REMOTE_ADDR'))
             return Response({'message': 'Blog viewed successfully'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
