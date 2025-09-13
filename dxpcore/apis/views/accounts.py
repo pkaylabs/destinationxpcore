@@ -467,22 +467,27 @@ class BlockUserAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        blocked_user_id = request.data.get('blocked_user_id')
         chatroom_id = request.data.get('chatroom_id')
-        # check if user and blocked_user_id are in the same chatroom
-        if not blocked_user_id:
-            return Response({'error': 'Blocked user ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        # check if user belongs to that chatroom
         if not chatroom_id:
             return Response({'error': 'Chatroom ID is required'}, status=status.HTTP_400_BAD_REQUEST)
         chatroom = ChatRoom.objects.filter(id=chatroom_id, members=user).first()
         if not chatroom:
             return Response({'error': 'Chatroom not found'}, status=status.HTTP_404_NOT_FOUND)
-        blocked_user = User.objects.filter(id=blocked_user_id, deleted=False).first()
-        if not blocked_user:
-            return Response({'error': 'User to be blocked not found'}, status=status.HTTP_404_NOT_FOUND)
-        if user.id == blocked_user.id:
-            return Response({'error': 'You cannot block yourself'}, status=status.HTTP_400_BAD_REQUEST)
-        # Add the blocked user to the user's blocked list
-        user.blocked_users.add(blocked_user)
-        user.save()
+        # for now, blocking a user will just delete the chatroom
+        # in future, we can implement a more robust blocking system
+        chatroom.delete()
         return Response({'message': 'User blocked successfully'}, status=status.HTTP_200_OK)
+
+
+class ReportUserAPIView(APIView):
+    '''API endpoint to report a user'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        reported_user_id = request.data.get('reported_user_id')
+        reason = request.data.get('reason')
+        # simulate reporting a user
+        time.sleep(2)
+        return Response({'message': 'User reported successfully'}, status=status.HTTP_200_OK)
