@@ -351,6 +351,7 @@ class FriendRequestsAPIView(APIView):
                 'status': 'sent' if fr.sender == user else 'received',
                 'sender_id': fr.sender.id,
                 'sender_name': fr.sender.name,
+                'receiver_name': fr.receiver.name,
                 'sender_avatar': fr.sender.avatar.url if fr.sender.avatar else '',
                 'created_at': fr.created_at
             } for fr in friend_requests]
