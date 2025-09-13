@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from accounts.models import User
 
-from .models import Blog, BlogView, Hotel, Notification, Political, TouristSite
+from .models import Blog, BlogView, Hotel, Notification, Political, ReportUser, TouristSite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -119,6 +119,15 @@ class BlogViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogView
         fields = '__all__'
+
+
+class ReportUserSerializer(serializers.Serializer):
+    '''Serializer for reporting a user'''
+    reporter = UserSerializer(read_only=True)
+    reported_user = UserSerializer(read_only=True)
+    class Meta:
+        model = ReportUser
+        fields = ['reporter', 'reported_user', 'reason']
 
 
 class ChangePasswordSerializer(serializers.Serializer):

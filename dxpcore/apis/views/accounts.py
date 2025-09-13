@@ -6,6 +6,7 @@ from knox.models import AuthToken
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 
 from accounts.models import OTP, User
 from apis.models import ChatRoom, FriendRequest
@@ -340,10 +341,14 @@ class FriendRequestsAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        friend_requests = FriendRequest.objects.filter(receiver=user.id, accepted=False).order_by('-created_at')
+        friend_requests = FriendRequest.objects.filter(
+            Q(sender=user) | Q(receiver=user), accepted=False
+            
+        ).order_by('-created_at')
         return Response({
             'friend_requests': [{
                 'id': fr.id,
+                'status': 'sent' if fr.sender == user else 'received',
                 'sender_id': fr.sender.id,
                 'sender_name': fr.sender.name,
                 'sender_avatar': fr.sender.avatar.url if fr.sender.avatar else '',
@@ -454,3 +459,30 @@ class AccountDeletionRequestAPIView(APIView):
         # simulate account deletion request
         time.sleep(2)
         return Response({'message': 'Account deletion request submitted successfully'}, status=status.HTTP_200_OK)
+    
+
+class BlockUserAPIView(APIView):
+    '''API endpoint to block a user'''
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        blocked_user_id = request.data.get('blocked_user_id')
+        chatroom_id = request.data.get('chatroom_id')
+        # check if user and blocked_user_id are in the same chatroom
+        if not blocked_user_id:
+            return Response({'error': 'Blocked user ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not chatroom_id:
+            return Response({'error': 'Chatroom ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+        chatroom = ChatRoom.objects.filter(id=chatroom_id, members=user).first()
+        if not chatroom:
+            return Response({'error': 'Chatroom not found'}, status=status.HTTP_404_NOT_FOUND)
+        blocked_user = User.objects.filter(id=blocked_user_id, deleted=False).first()
+        if not blocked_user:
+            return Response({'error': 'User to be blocked not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.id == blocked_user.id:
+            return Response({'error': 'You cannot block yourself'}, status=status.HTTP_400_BAD_REQUEST)
+        # Add the blocked user to the user's blocked list
+        user.blocked_users.add(blocked_user)
+        user.save()
+        return Response({'message': 'User blocked successfully'}, status=status.HTTP_200_OK)
