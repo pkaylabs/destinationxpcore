@@ -8,7 +8,7 @@ from apis.serializers import PoliticalSerializer
 
 class PoliticalListAPI(APIView):
     '''Political List API endpoint'''
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
         '''Get all political. Everyone can view the political'''
@@ -19,7 +19,7 @@ class PoliticalListAPI(APIView):
     def post(self, request, *args, **kwargs):
         '''Create a new Political. Only staff can create a site'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to create a political site'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = PoliticalSerializer(data=request.data)
         site_id = request.data.get('id')
@@ -38,7 +38,7 @@ class PoliticalListAPI(APIView):
     def delete(self, request, *args, **kwargs):
         '''Delete a political site. Only staff can delete a site'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to delete a political site'}, status=status.HTTP_401_UNAUTHORIZED)
         site_id = request.data.get('id')
         site = Political.objects.filter(id=site_id).first()

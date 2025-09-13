@@ -8,7 +8,7 @@ from apis.serializers import TouristSiteSerialiser
 
 class TouristSiteListAPI(APIView):
     '''TouristSite List API endpoint'''
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
         '''Get all sites. Everyone can view the sites'''
@@ -19,7 +19,7 @@ class TouristSiteListAPI(APIView):
     def post(self, request, *args, **kwargs):
         '''Create a new tourist site. Only staff can create a site'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to create a tourist site'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = TouristSiteSerialiser(data=request.data)
         site_id = request.data.get('id')
@@ -38,7 +38,7 @@ class TouristSiteListAPI(APIView):
     def delete(self, request, *args, **kwargs):
         '''Delete a tourist site. Only staff can delete a site'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to delete a tourist site'}, status=status.HTTP_401_UNAUTHORIZED)
         site_id = request.data.get('id')
         site = TouristSite.objects.filter(id=site_id).first()
