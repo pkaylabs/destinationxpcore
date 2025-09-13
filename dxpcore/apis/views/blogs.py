@@ -8,7 +8,7 @@ from apis.serializers import BlogSerializer, BlogViewSerializer
 
 class BlogsListAPI(APIView):
     '''Blog List API endpoint'''
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
         '''Get all/random blogs. Everyone can view the blogs'''

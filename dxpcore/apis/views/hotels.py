@@ -8,7 +8,7 @@ from apis.serializers import HotelSerializer
 
 class HotelListAPI(APIView):
     '''Hotel List API endpoint'''
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
         '''Get all hotels. Everyone can view the hotels'''
@@ -19,7 +19,7 @@ class HotelListAPI(APIView):
     def post(self, request, *args, **kwargs):
         '''Create a new hotel. Only staff can create a hotel'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to create a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = HotelSerializer(data=request.data)
         hotel_id = request.data.get('id')
@@ -38,7 +38,7 @@ class HotelListAPI(APIView):
     def delete(self, request, *args, **kwargs):
         '''Delete a hotel. Only staff can delete a hotel'''
         user = request.user
-        if not user.is_staff:
+        if not user.is_authenticated or not user.is_staff:
             return Response({'message': 'You are not authorized to delete a hotel'}, status=status.HTTP_401_UNAUTHORIZED)
         hotel_id = request.data.get('id')
         hotel = Hotel.objects.filter(id=hotel_id).first()
