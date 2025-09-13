@@ -63,4 +63,5 @@ urlpatterns += [
     path('acceptfriendrequest/', views.AcceptFriendRequestAPIView.as_view(), name='acceptfriendrequest'),
     path('rejectfriendrequest/', views.RejectFriendRequestAPIView.as_view(), name='rejectfriendrequest'),
     path('blockuser/', views.BlockUserAPIView.as_view(), name='blockuser'),
+    path('reportuser/', views.ReportUserAPIView.as_view(), name='reportuser'),
 ]
