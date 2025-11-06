@@ -59,8 +59,8 @@ class Hotel(models.Model):
     '''Model to store information about hotels'''
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=500)
-    phone = models.CharField(max_length=12)
-    email = models.EmailField(max_length=50)
+    phone = models.CharField(max_length=15)
+    email = models.EmailField(max_length=50, null=True, blank=True)
     website = models.URLField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='hotels/', null=True, blank=True)
@@ -78,8 +78,8 @@ class Political(models.Model):
     '''Model to store information about political sites'''
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=500)
-    phone = models.CharField(max_length=12)
-    email = models.EmailField(max_length=50)
+    phone = models.CharField(max_length=15)
+    email = models.EmailField(max_length=50, null=True, blank=True)
     landmark = models.CharField(max_length=255)
     custodian = models.CharField(max_length=200)
     category = models.CharField(max_length=50,default=PoliticalCategory.OTHERS.value)
@@ -98,8 +98,8 @@ class TouristSite(models.Model):
     '''Model to store information about tourist sites'''
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=500)
-    phone = models.CharField(max_length=12)
-    email = models.EmailField(max_length=50)
+    phone = models.CharField(max_length=15)
+    email = models.EmailField(max_length=50, null=True, blank=True)
     landmark = models.CharField(max_length=255)
     custodian = models.CharField(max_length=200, default='No Custodian Identified')
     description = models.TextField()
