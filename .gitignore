@@ -4,3 +4,4 @@ venv
 assets
 uvicorn_asgi_cmd.txt
 dxpmobile.json
+deployment/
