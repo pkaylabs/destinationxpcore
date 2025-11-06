@@ -8,8 +8,7 @@ class AccountManager(BaseUserManager):
         '''Create a regular user'''
         if not email:
             raise ValueError('The Email field must be set')
-        if not phone:
-            raise ValueError('The Phone field must be set')
+
         if not password:
             raise ValueError('The Password field must be set')
 
@@ -31,8 +30,7 @@ class AccountManager(BaseUserManager):
         '''Create a superuser'''
         if not email:
             raise ValueError('The Email field must be set')
-        if not phone:
-            raise ValueError('The Phone field must be set')
+
         if not password:
             raise ValueError('The Password field must be set')
 
